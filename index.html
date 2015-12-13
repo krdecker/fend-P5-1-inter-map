@@ -6,8 +6,7 @@
 </head>
 <body>
     <ul id="cat-list"></ul>
-    <div id="cat">
-
+    <div id="cat" data-bind="with: currentCat">
         <h2 id="cat-name" data-bind="text: name"></h2>
         <h3 id="cat-level" data-bind="text: catLevel"></h3>
         <div id="cat-count" data-bind="text: clickCount"></div>
