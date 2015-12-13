@@ -65,18 +65,21 @@ var ViewModel = function () {
     });
 
     this.currentCat = ko.observable( this.catList()[0]);
-    console.log(this.currentCat().clickCount());
+    //console.log(this.currentCat().clickCount());
     this.incrementCounter = function () { // when this func is called on click binding
                                         // context is with:currentCat ie = this
                                         // so need to use self to pass ViewModel
                                         // OR ELSE:
                                         // this.clickCount(this.clickCount()+1);
-        console.log(self.currentCat().clickCount());
+        //console.log(self.currentCat().clickCount());
         self.currentCat().clickCount(self.currentCat().clickCount() + 1);
     }
     // this.incrementCounter = function () {
     //     this.clickCount(this.clickCount() + 1);
     // }
+    this.changeCat = function (cat) {
+        self.currentCat(cat);
+    }
 }
 
 ko.applyBindings(new ViewModel())
