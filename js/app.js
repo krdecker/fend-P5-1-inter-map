@@ -11,7 +11,7 @@ var Cat = function () {
             'Rogue',
             'FatCat'
         ];
-    this.catLevel = ko.pureComputed( function () {
+    this.catLevel = ko.computed( function () {
         var age = 0;
         age = Math.floor(this.clickCount() / 16);
         if (age >= this.level.length) age = this.level.length - 1;
@@ -20,9 +20,16 @@ var Cat = function () {
 }
 
 var ViewModel = function () {
+    var self = this;
+
+    this.currentCat = ko.observable( new Cat() );
+
     this.incrementCounter = function () {
-        this.clickCount(this.clickCount() + 1);
+        self.currentCat().clickCount(self.currentCat().clickCount() + 1);
     }
+    // this.incrementCounter = function () {
+    //     this.clickCount(this.clickCount() + 1);
+    // }
 }
 
 ko.applyBindings(new ViewModel())
