@@ -1,4 +1,4 @@
-
+// cat data:
 var initialCats = [
         {
             clickCount : 0,
@@ -60,26 +60,23 @@ var Cat = function (data) { // data will be an (array of) object literal(s)
 var ViewModel = function () {
     var self = this;
     this.catList = ko.observableArray([]);
-    initialCats.forEach(function(catItem) {
-        self.catList.push( new Cat(catItem));
+    initialCats.forEach( function(catItem) {
+        self.catList.push( new Cat(catItem) );
     });
+    this.currentCat = ko.observable( this.catList()[0] );
 
-    this.currentCat = ko.observable( this.catList()[0]);
-    //console.log(this.currentCat().clickCount());
     this.incrementCounter = function () { // when this func is called on click binding
                                         // context is with:currentCat ie = this
                                         // so need to use self to pass ViewModel
                                         // OR ELSE:
                                         // this.clickCount(this.clickCount()+1);
-        //console.log(self.currentCat().clickCount());
+
         self.currentCat().clickCount(self.currentCat().clickCount() + 1);
     }
     // this.incrementCounter = function () {
     //     this.clickCount(this.clickCount() + 1);
     // }
-    this.changeCat = function (cat) {
-        self.currentCat(cat);
-    }
+    this.changeCat = function (clickedCat) { self.currentCat(clickedCat) }
 }
 
 ko.applyBindings(new ViewModel())
