@@ -1,3 +1,19 @@
+
+
+
+    // **Broadway-Commercial Station**
+
+    // TRAINS - filter by line
+
+    // BUSES - filter by direction EB, WB, NB, SB; filter by route no.
+
+    // EATS - filter by food or beverage
+
+    // SHOPS - filter by product categories
+
+    // TO-DO - filter by adult, children])
+
+
 // cat data:
 var initialCats = [
         {
@@ -59,11 +75,20 @@ var Cat = function (data) { // data will be an (array of) object literal(s)
 
 var ViewModel = function () {
     var self = this;
+
+    this.station = ko.observable("Broadway-Commercial");
+
+    this.optList = ko.observableArray(["TRAINS","BUSES","EATS","SHOPS","TO-DO"]);
+
+    this.mapDisplay = ko.observable("display:none");
+
+
     this.catList = ko.observableArray([]);
     initialCats.forEach( function(catItem) {
         self.catList.push( new Cat(catItem) );
     });
-    this.currentCat = ko.observable( this.catList()[0] );
+
+    this.currentOpt = ko.observable( this.optList()[0] );
 
     this.incrementCounter = function () { // when this func is called on click binding
                                         // context is with:currentCat ie = this
@@ -72,11 +97,17 @@ var ViewModel = function () {
                                         // this.clickCount(this.clickCount()+1);
 
         self.currentCat().clickCount(self.currentCat().clickCount() + 1);
-    }
+    };
     // this.incrementCounter = function () {
     //     this.clickCount(this.clickCount() + 1);
     // }
-    this.changeCat = function (clickedCat) { self.currentCat(clickedCat) }
-}
+    this.changeCat = function (clickedCat) { self.currentCat(clickedCat) };
+
+    this.changeOpt = function (clickedOpt) {
+        self.currentOpt(clickedOpt);
+        console.log("Option= " + self.currentOpt());
+        self.mapDisplay("display:block");
+    };
+};
 
 ko.applyBindings(new ViewModel())

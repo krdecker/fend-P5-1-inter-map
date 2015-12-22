@@ -2,24 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Cat Clicker</title>
+    <title>Station Tout</title>
     <link href="styles.css" rel="stylesheet">
 </head>
 <body>
-    <ul id="cat-list" data-bind="foreach: catList">
-        <li data-bind="text: name, click: $parent.changeCat"></li>
+    <h1 class="station-title" data-bind="text: station"></h1>
+    <h1 class="station-title">Station</h1>
+    <div id="map-div" data-bind="attr: {style: mapDisplay}">MAP
+        <h2>Where The Buffalo Roam</h2>
+    </div>
+    <ul id="opt-list" data-bind="foreach: optList">
+        <li class="option" data-bind="text: $data, click: $parent.changeOpt"></li>
     </ul>
-    <div id="cat" data-bind="with: currentCat">
-        <h2 id="cat-name" data-bind="text: name"></h2>
-        <h3 id="cat-level" data-bind="text: catLevel"></h3>
-        <div id="cat-count" data-bind="text: clickCount"></div>
-        <img id="cat-img" src="" alt="cute cat"
-            data-bind="attr: {src: imgSrc}, click: $parent.incrementCounter">
+
+    <!-- <div id="opt" data-bind="with: currentOpt">
+        <h2 id="opt-name" data-bind="text: name"></h2>
+        <h3 id="opt-level" data-bind="text: optLevel"></h3>
+        <div id="opt-count" data-bind="text: clickCount"></div>
+        <img id="opt-img" src="" alt="options"
+            data-bind="attr: {src: imgSrc}, click: $parent.routeOpter">
         <h3>Nick-names:</h3>
         <ul data-bind="foreach: nickNames">
             <li data-bind="text: $data"></li>
         </ul>
-    </div>
+    </div> -->
     <script src="js/lib/knockout-3.2.0.js"></script>
     <script src="js/app.js"></script>
 </body>
