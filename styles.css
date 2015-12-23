@@ -1,0 +1,28 @@
+#styles.css{}
+
+body {
+    background-color: #278027;
+}
+
+.station-title {
+    color: #202090;
+    font-size: 5em;
+    margin: 1% 5%;
+}
+
+.option {
+    color: #e7c747;
+    font-size: 3em;
+    padding: 5%;
+    margin: 5% 10%;
+    background-color: #c01010;
+    /* #871212;*/
+    border-radius: 5%;
+}
+
+#map-div {
+    margin: 10%;
+    height: 100px;
+    color: #a0a0a0;
+    background-color: #010101;
+}

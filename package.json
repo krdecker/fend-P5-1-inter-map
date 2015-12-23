@@ -1,0 +1,16 @@
+{
+  "name": "inter-map",
+  "version": "1.0.0",
+  "description": "neighbourhood interactive map",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "#skytrain",
+    "#intermap",
+    "#front-end-udacity"
+  ],
+  "author": "KR Decker",
+  "license": "ISC"
+}
