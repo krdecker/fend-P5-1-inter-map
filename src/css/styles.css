@@ -1,6 +1,44 @@
 #styles.css{}
 
 body {
+    background-color: #828282;
+}
+
+.station-title {
+    color: #406090;
+    font-size: 5em;
+    margin: 1% 5%;
+    width: 66%;
+}
+
+#opt-list {
+    margin-top: 10%;
+}
+.option {
+    color: #304020;
+    font-size: 3em;
+    padding: 5%;
+    padding-left: 15%;
+    margin: 5% 10%;
+    background-color: #a09080;
+    /* #871212;*/
+    border-radius: 5%;
+}
+
+#map-div {
+    margin: 10%;
+    height: 100px;
+    color: #a0a0a0;
+    background-color: #010101;
+}
+
+#burger {
+    float: right;
+    margin: 5%;
+}
+
+/* green bg red button yellow text */
+/*body {
     background-color: #278027;
 }
 
@@ -16,7 +54,7 @@ body {
     padding: 5%;
     margin: 5% 10%;
     background-color: #c01010;
-    /* #871212;*/
+    /* #871212;
     border-radius: 5%;
 }
 
@@ -25,4 +63,4 @@ body {
     height: 100px;
     color: #a0a0a0;
     background-color: #010101;
-}
+}*/

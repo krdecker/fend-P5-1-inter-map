@@ -78,7 +78,7 @@ var ViewModel = function () {
 
     this.station = ko.observable("Broadway-Commercial");
 
-    this.optList = ko.observableArray(["TRAINS","BUSES","EATS","SHOPS","TO-DO"]);
+    this.optList = ko.observableArray(["Trains","Buses","Eats","Shops","To Do"]);
 
     this.mapDisplay = ko.observable("display:none");
 
