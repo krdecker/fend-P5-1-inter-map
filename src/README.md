@@ -1,4 +1,8 @@
-ud989-cat-clicker-ko-starter
-============================
+fend-P5-1-inter-map
+===================
 
-ud989-cat-clicker-ko-starter
+Interactive Neighbourhood Map
+
+- started by re-factoring Ben's Cat-Clicker code for KnockoutJS
+
+
