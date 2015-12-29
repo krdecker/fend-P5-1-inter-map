@@ -5,6 +5,7 @@ body {
 }
 
 .station-title {
+    display: flex;
     color: #406090;
     font-size: 5em;
     margin: 1% 5%;
@@ -12,11 +13,11 @@ body {
 }
 
 #opt-list {
-    margin-top: 10%;
+    margin-top: 15%;
 }
 .option {
-    color: #304020;
-    font-size: 3em;
+    color: #2c391c;
+    font-size: 3.5em;
     padding: 5%;
     padding-left: 15%;
     margin: 5% 10%;
