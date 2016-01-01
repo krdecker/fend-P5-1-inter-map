@@ -73,6 +73,29 @@ var Cat = function (data) { // data will be an (array of) object literal(s)
     }, this);
 }
 
+var map;
+
+// function initMap() {
+//     var mapOptions = {
+//         disableDefaultUI: true
+//     };
+
+//     // This next line makes `map` a new Google Map JavaScript Object and attaches it to
+//     // <div id="map-box">, which is appended as part of an exercise late in the course.
+//     map = new google.maps.Map(document.querySelector('#map-div'), mapOptions);
+// }
+
+function initMap() {
+    // Create a map object and specify the DOM element for display.
+    map = new google.maps.Map(document.getElementById('map-div'), {
+        center: {lat: 49.263, lng: -123.0695},
+        // Commercial Broadway Station 49°15′45″N, 123°04′08″W
+        scrollwheel: false,
+        zoom: 19 // tighter for transit
+        //zoom: 18 // for eats etc
+    });
+}
+
 var ViewModel = function () {
     var self = this;
 
@@ -107,10 +130,17 @@ var ViewModel = function () {
         self.currentOpt(clickedOpt);
         console.log("Option= " + self.currentOpt());
         self.mapDisplay("display:block");
+        initMap();
     };
+
+    this.menuReturn = function () {
+        self.mapDisplay("display:none");
+    }
 };
 
 ko.applyBindings(new ViewModel())
+
+//initMap()
 
 // from ISS API website: (maybe useful for translink api)
 
@@ -129,3 +159,5 @@ ko.applyBindings(new ViewModel())
 //          $('#astronames').append('<li>' + d['name'] + '</li>');
 //     });
 // });
+
+
