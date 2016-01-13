@@ -22,44 +22,78 @@
 // lists of sites on each map-view
 
 // trains data: ???
-var trainsModel = [
-        {},
-        {}
-    ];
+var trainsModel = {};
 
 // bus data:
-var busModel = [];
+var busModel = {};
 
 // eats data: an array of places
-var eatsModel = [
+var eatsModel = {
+    zoomLevel: 17,
+    spots: [
         {
-            name : 'A&W Restaurant : Burgers Fast',
-            location : {lat: 49.263, lng: -123.0695}
+            name: "A&W Restaurant",
+            location: {lat: 49.262535, lng: -123.069399}
         },
         {
-            name : '',
-            location : {lat: 49.263, lng: -123.0695}
+            name: "Uncle Fatih's Pizza",
+            location: {lat: 49.262517, lng: -123.070177}
+        },
+        {
+            name: "Booster Juice",
+            location: {lat: 49.262641, lng: -123.069438}
+        },
+        {
+            name: "Starbucks Coffee",
+            location: {lat: 49.261874, lng: -123.070176}
+        },
+        {
+            name: "Blenz Coffee",
+            location: {lat: 49.262539, lng: -123.069361}
         }
-    ];
+    ]
+};
 
 // shops data:
-var shopsModel = [
+var shopsModel = {
+    zoomLevel: 17,
+    spots: [
         {
-            name : 'Pharmasave',
-            location : {lat: 49.263, lng: -123.0695}
+            name: "Pharmasave",
+            location: {lat: 49.263, lng: -123.0695}
         },
         {
-            name : '',
-            location : {lat: 49.263, lng: -123.0695}
+            name: "Bank of Montreal",
+            location: {lat: 49.263, lng: -123.0695}
         }
-    ];
+    ]
+};
+
+// todo data:
+var todoModel = {
+    zoomLevel: 16,
+    spots: [
+        {
+            name: "Buddhist Temple",
+            location: {lat: 49.263, lng: -123.0695}
+        },
+        {
+            name: "Mosque",
+            location: {lat: 49.263, lng: -123.0695}
+        },
+        {
+            name: "Community Garden Walk",
+            location: {lat: 49.263, lng: -123.0695}
+        }
+    ]
+};
 
 ///////////////MAP API///////////////////////////
 
 var map;
 
 //get rid of all Google's POI and Transit features on our map
-var bareStyles = [
+var cleanSweep = [
         {
             featureType: "poi",
             elementType: "labels",
@@ -86,7 +120,7 @@ var mapOptions = {
         scrollwheel: false,
         draggable: false,
         disableDefaultUI: true,
-        styles: bareStyles
+        styles: cleanSweep
     }
 
 // function initMap() {
@@ -102,6 +136,16 @@ var mapOptions = {
 function initMap() {
     // Create a map object and specify the DOM element for display.
     map = new google.maps.Map(document.getElementById('map-div'), mapOptions );
+
+    for (var i in eatsModel.spots) {
+        var spot = eatsModel.spots[i];
+        console.log(spot.name);
+        var marker = new google.maps.Marker({
+            position: spot.location,
+            title: spot.name,
+            map: map
+        });
+    }
 }
 
 
@@ -132,7 +176,7 @@ var ViewModel = function () {
     this.station = "Broadway-Commercial"; //ko.observable("Broadway-Commercial");
 
     this.optList = ["Trains","Buses","Eats","Shops","To Do"]; //ko.observableArray(["Trains","Buses","Eats","Shops","To Do"]);
-
+    this.spotList = ko.observableArray([]);
     this.mapDisplay = ko.observable("display:none");
     this.menuDisplay = ko.observable("display:block");
 
@@ -162,12 +206,18 @@ var ViewModel = function () {
         console.log("Option= " + self.currentOpt());
         self.menuDisplay("display:none");
         self.mapDisplay("display:block");
-        initMap();
-    };
+        initMap(self.currentOpt());
+        self.buildSpotlist(self.currentOpt());
+    }
 
     this.menuReturn = function () {
         self.mapDisplay("display:none");
         self.menuDisplay("display:block");
+    }
+
+    this.buildSpotlist = function(option){
+        console.log("Building Spotlist from: " + option);
+        self.spotList(eatsModel.spots);
     }
 };
 

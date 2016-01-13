@@ -56,6 +56,14 @@ body {
     margin: 5%;
 }
 
+#spot-list {
+
+}
+.spot {
+    font-size: 3em;
+    color: orange;
+}
+
 /* green bg red button yellow text */
 /*body {
     background-color: #278027;
