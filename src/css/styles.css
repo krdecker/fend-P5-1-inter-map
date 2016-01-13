@@ -1,4 +1,10 @@
 #styles.css{}
+/*<style type="text/css">
+*/
+html, body { height: 100%; margin: 0; padding: 0; }
+#map { height: 100%; }
+/*</style>
+*/
 
 body {
     background-color: #828282;
@@ -10,6 +16,10 @@ body {
     font-size: 5em;
     margin: 1% 5%;
     width: 66%;
+}
+#burger {
+   /* height: 8%;*/
+    width: 8%;
 }
 
 #opt-list {

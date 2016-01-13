@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Station Tout</title>
+<!--
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+-->
     <link href="css/styles.css" rel="stylesheet">
 </head>
 <body>
@@ -12,15 +16,17 @@
         <h1 class="station-title">Station</h1>
     </div>
 
+   <ul id="opt-list" data-bind="foreach: optList, attr: {style: menuDisplay}">
+        <li class="option" data-bind="text: $data, click: $parent.changeOpt"></li>
+    </ul>
     <div id="map-box" data-bind="attr: {style: mapDisplay}">
 <!--         MAP BOX
-        <h2>Where The Buffalo Roam</h2> -->
+        <h2>Where The Buffalo Roam</h2>
+-->
         <div id="map-div"></div>
     </div>
 
-    <ul id="opt-list" data-bind="foreach: optList">
-        <li class="option" data-bind="text: $data, click: $parent.changeOpt"></li>
-    </ul>
+
 
 <!--
         <div id="opt" data-bind="with: currentOpt">
