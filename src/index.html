@@ -22,7 +22,9 @@
     <ul id="spot-list" data-bind="foreach: spotList, attr: {style: mapDisplay}">
         <li class="spot" data-bind="text: name"></li>
     </ul>
-
+    <div id="selector" data-bind="attr: {style: mapDisplay}">
+        <input data-bind="value: choice" />
+    </div>
     <div id="map-box" data-bind="attr: {style: mapDisplay}">
         <div id="map-div"></div>
     </div>

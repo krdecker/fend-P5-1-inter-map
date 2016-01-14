@@ -2,8 +2,14 @@
 /*<style type="text/css">
 */
 
-html, body { height: 100%; margin: 0; padding: 0; }
-#map-div { height: 100%; }
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+#map-div {
+    height: 100%;
+}
 /*</style>
 */
 
@@ -58,13 +64,20 @@ body {
 }
 
 #spot-list {
-
+    margin-left: 3%;
 }
 .spot {
     font-size: 3em;
     color: orange;
+    padding-left: 0;
 }
-
+#selector {
+    height: 10%;
+    padding-left: 5%;
+}
+input {
+    font-size: 2em;
+}
 /* green bg red button yellow text */
 /*body {
     background-color: #278027;

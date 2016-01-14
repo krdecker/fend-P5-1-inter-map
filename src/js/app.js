@@ -1,19 +1,7 @@
 
 
 
-    // **Broadway-Commercial Station**
 
-// user chooses a map-view:
-
-    // TRAINS - filter by line
-
-    // BUSES - filter by direction EB, WB, NB, SB; filter by route no.
-
-    // EATS - filter by food or beverage
-
-    // SHOPS - filter by product categories
-
-    // TO-DO - filter by adult, children])
 
 ///////////////////MODEL///////////////////////
 
@@ -101,6 +89,10 @@ var ShopsModel = {
 var TodoModel = {
     zoomLevel: 16,
     spots: [
+        {
+            name: "Rio Cinema On Broadway",
+            location: {lat: 49.262039, lng: -123.070509}
+        },
         {
             name: "Tung Lin Kok Yuen Society Buddhist Temple",
             location: {lat: 49.262642, lng: -123.066175}
@@ -253,6 +245,7 @@ var ViewModel = function () {
 
     this.optList = ["Trains","Buses","Eats","Shops","To Do"]; //ko.observableArray(["Trains","Buses","Eats","Shops","To Do"]);
     this.spotList = ko.observableArray([]);
+    this.choice = ko.observable();
     this.mapDisplay = ko.observable("display:none");
     this.menuDisplay = ko.observable("display:block");
 
@@ -282,7 +275,7 @@ var ViewModel = function () {
         console.log("Option= " + clickedOpt);
 
         for (var i in optionModels){
-            console.log(optionModels[i].name);
+            //console.log(optionModels[i].name);
             if (optionModels[i].name == clickedOpt) {
                 optionData = optionModels[i].model;
             }
@@ -290,7 +283,7 @@ var ViewModel = function () {
 
         self.menuDisplay("display:none");
         self.mapDisplay("display:block");
-        console.log(optionData.zoomLevel);
+        //console.log(optionData.zoomLevel);
         resetMap(optionData);
         //initMap();
         self.buildSpotlist(optionData);
