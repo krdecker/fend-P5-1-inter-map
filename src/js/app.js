@@ -22,14 +22,19 @@
 // lists of sites on each map-view
 
 // trains data: ???
-var trainsModel = {};
+var TrainsModel = {
+    zoomLevel: 20,
+    center: {lat: 49.262252, lng: -123.069801},
+    spots: []
+};
 
 // bus data:
-var busModel = {};
+var BusModel = {};
 
 // eats data: an array of places
-var eatsModel = {
-    zoomLevel: 17,
+var EatsModel = {
+    zoomLevel: 20,
+    center: {lat: 49.262252, lng: -123.069801},
     spots: [
         {
             name: "A&W Restaurant",
@@ -55,7 +60,7 @@ var eatsModel = {
 };
 
 // shops data:
-var shopsModel = {
+var ShopsModel = {
     zoomLevel: 17,
     spots: [
         {
@@ -70,23 +75,36 @@ var shopsModel = {
 };
 
 // todo data:
-var todoModel = {
+var TodoModel = {
     zoomLevel: 16,
     spots: [
         {
-            name: "Buddhist Temple",
-            location: {lat: 49.263, lng: -123.0695}
+            name: "Tung Lin Kok Yuen Society Buddhist Temple",
+            location: {lat: 49.262642, lng: -123.066175}
         },
         {
-            name: "Mosque",
-            location: {lat: 49.263, lng: -123.0695}
+            name: "Daralmadinah Society Mosque",
+            location: {lat: 49.261643, lng: -123.070592}
         },
         {
             name: "Community Garden Walk",
             location: {lat: 49.263, lng: -123.0695}
+        },
+        {
+            name: "Trout Lake",
+            location: {lat: 49.257151, lng: -123.064527}
         }
     ]
 };
+
+//// mini-Router
+var optionModels = [
+        { name: "Trains", model: TrainsModel },
+        { name: "Bus", model: BusModel },
+        { name: "Eats", model: EatsModel },
+        { name: "Shops", model: ShopsModel },
+        { name: "To Do", model: TodoModel }
+];
 
 ///////////////MAP API///////////////////////////
 
@@ -134,11 +152,22 @@ var mapOptions = {
 // }
 
 function initMap() {
+    console.log("In initMap");
+    // Create a map object and specify the DOM element for display.
+    map = new google.maps.Map(document.getElementById('map-div'), mapOptions );
+}
+
+function resetMap(model) {
+    console.log("In resetMap: " + model.zoomLevel);
+
     // Create a map object and specify the DOM element for display.
     map = new google.maps.Map(document.getElementById('map-div'), mapOptions );
 
-    for (var i in eatsModel.spots) {
-        var spot = eatsModel.spots[i];
+    map.setZoom(model.zoomLevel);
+    map.setCenter(model.center);
+
+    for (var i in model.spots) {
+        var spot = model.spots[i];
         console.log(spot.name);
         var marker = new google.maps.Marker({
             position: spot.location,
@@ -147,11 +176,9 @@ function initMap() {
         });
     }
 }
-
-
 /////////////////KO VIEWMODEL///////////////////
 
-// this is a Cat class: he made a viewmodel object for each cat
+// this is a Cat class: he (Ben) made a viewmodel object for each cat
 // var Cat = function (data) { // data will be an (array of) object literal(s)
 //     this.clickCount = ko.observable(data.clickCount);
 //     this.name = ko.observable(data.name);
@@ -168,6 +195,9 @@ function initMap() {
 // }
 
 // ???? so maybe a MapView class, instances for  trainVM, busVM, eatsVM etc
+
+var optionData;
+
 
 var ViewModel = function () {
     var self = this;
@@ -186,7 +216,7 @@ var ViewModel = function () {
     //     self.catList.push( new Cat(catItem) );
     // });
 
-    this.currentOpt = ko.observable( this.optList[0] );
+    //this.currentOpt = ko.observable( this.optList[0] );
 
     // this.incrementCounter = function () { // when this func is called on click binding
     //                                     // context is with:currentCat ie = this
@@ -202,12 +232,23 @@ var ViewModel = function () {
     // this.changeCat = function (clickedCat) { self.currentCat(clickedCat) };
 
     this.changeOpt = function (clickedOpt) {
-        self.currentOpt(clickedOpt);
-        console.log("Option= " + self.currentOpt());
+
+        console.log("Option= " + clickedOpt);
+
+        for (var i in optionModels){
+            console.log(optionModels[i].name);
+            if (optionModels[i].name == clickedOpt) {
+                optionData = optionModels[i].model;
+            }
+        };
+
         self.menuDisplay("display:none");
         self.mapDisplay("display:block");
-        initMap(self.currentOpt());
-        self.buildSpotlist(self.currentOpt());
+        console.log(optionData.zoomLevel);
+        resetMap(optionData);
+        //initMap();
+        self.buildSpotlist(optionData);
+
     }
 
     this.menuReturn = function () {
@@ -215,9 +256,11 @@ var ViewModel = function () {
         self.menuDisplay("display:block");
     }
 
-    this.buildSpotlist = function(option){
-        console.log("Building Spotlist from: " + option);
-        self.spotList(eatsModel.spots);
+    this.buildSpotlist = function(model){
+        //console.log("Building Spotlist from: data object");
+        //console.log("spotList start ");
+        //console.log("eg: " + model.spots[0].name);
+        self.spotList(model.spots);
     }
 };
 
