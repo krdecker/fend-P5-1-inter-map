@@ -23,13 +23,36 @@
 
 // trains data: ???
 var TrainsModel = {
-    zoomLevel: 20,
-    center: {lat: 49.262252, lng: -123.069801},
-    spots: []
+    zoomLevel: 19,
+    center: {lat: 49.262219, lng: -123.069252},
+    spots: [
+        {
+            name: "Skytrain Platform 3 & 4",
+            location: {lat: 49.261905, lng: -123.069172}
+        },
+        {
+            name: "Skytrain Platform 2",
+            location: {lat: 49.262980, lng: -123.068477}
+        }
+    ]
 };
 
-// bus data:
-var BusModel = {};
+// buses data:
+var BusesModel = {
+    zoomLevel: 19,
+    center: {lat: 49.262252, lng: -123.069801},
+    spots: [
+        {
+            name: "WB E Broadway NS Commercial Bay 1",
+            location: {lat: 49.262437, lng: -123.069420}
+        },
+        {
+            name: "EB E Broadway FS Commercial Dr",
+            location: {lat: 49.262216, lng: -123.068957}
+        }
+
+    ]
+};
 
 // eats data: an array of places
 var EatsModel = {
@@ -54,7 +77,7 @@ var EatsModel = {
         },
         {
             name: "Blenz Coffee",
-            location: {lat: 49.262539, lng: -123.069361}
+            location: {lat: 49.262534, lng: -123.069529}
         }
     ]
 };
@@ -64,12 +87,12 @@ var ShopsModel = {
     zoomLevel: 17,
     spots: [
         {
-            name: "Pharmasave",
-            location: {lat: 49.263, lng: -123.0695}
+            name: "Shopper's Drug Mart",
+            location: {lat: 49.262576, lng: -123.068751}
         },
         {
             name: "Bank of Montreal",
-            location: {lat: 49.263, lng: -123.0695}
+            location: {lat: 49.262156, lng: -123.070113},
         }
     ]
 };
@@ -88,19 +111,24 @@ var TodoModel = {
         },
         {
             name: "Community Garden Walk",
-            location: {lat: 49.263, lng: -123.0695}
+            location: {lat: 49.259850, lng: -123.069303}
         },
         {
             name: "Trout Lake",
             location: {lat: 49.257151, lng: -123.064527}
+        },
+        {
+            name: "St.Augustine's Local Beer Pub",
+            location: {lat: 49.263781, lng: -123.069252}
         }
+
     ]
 };
 
 //// mini-Router
 var optionModels = [
         { name: "Trains", model: TrainsModel },
-        { name: "Bus", model: BusModel },
+        { name: "Buses", model: BusesModel },
         { name: "Eats", model: EatsModel },
         { name: "Shops", model: ShopsModel },
         { name: "To Do", model: TodoModel }
@@ -150,6 +178,8 @@ var mapOptions = {
 //     // <div id="map-box">, which is appended as part of an exercise late in the course.
 //     map = new google.maps.Map(document.querySelector('#map-div'), mapOptions);
 // }
+var markers = [],
+    infoWindow;
 
 function initMap() {
     console.log("In initMap");
@@ -169,12 +199,28 @@ function resetMap(model) {
     for (var i in model.spots) {
         var spot = model.spots[i];
         console.log(spot.name);
+        var marker = getMarker(spot.location, spot.name, map);
+        markers.push(marker);
+    }
+
+    function getMarker (location, name, map) {
         var marker = new google.maps.Marker({
-            position: spot.location,
+            position: location,
             title: spot.name,
             map: map
         });
+        // add an Info Window on click event
+        google.maps.event.addListener(marker, 'click', function() {
+            if (typeof infoWindow != 'undefined') infoWindow.close(); // unique opening
+            infoWindow = new google.maps.InfoWindow({
+                content: name // TODO change this to <img src=''>
+            });
+            infoWindow.open(map, marker);
+        });
+        return marker;
     }
+
+
 }
 /////////////////KO VIEWMODEL///////////////////
 
