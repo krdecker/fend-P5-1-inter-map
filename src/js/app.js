@@ -214,6 +214,35 @@ function resetMap(model) {
 
 
 }
+
+function toggleMarker(name, toss) {
+    //console.log("in toggleMarker: " + name + " wants to " + toss);
+    for (var i = markers.length - 1; i >= 0; i--) {
+        var marker = markers[i];
+        if (marker.title == name) {
+            if (toss == "hide") {
+                marker.setMap(null);
+            }
+            else marker.setMap(map);
+        }
+    };
+}
+
+function siftText(inputvalue) {
+    var re = new RegExp(inputvalue, ['i']);
+    var strElements = document.getElementsByClassName("spot");
+
+    for(var i=0; i<strElements.length; i++) {
+        if (re.test(strElements[i].textContent)) {
+            strElements[i].setAttribute("style", "visibility:visible");
+            toggleMarker(strElements[i].textContent, "show");
+        }
+        else {
+            strElements[i].setAttribute("style", "visibility:hidden");
+            toggleMarker(strElements[i].textContent, "hide");
+        }
+    };
+}
 /////////////////KO VIEWMODEL///////////////////
 
 var optionData; // global to pass pointer to data object
@@ -284,11 +313,11 @@ var ViewModel = function () {
     self.isSelected = ko.observable(false);
     self.setFilterSelected = function() {
         this.isSelected(true);
-
     };
 
     self.selectSlot.subscribe(function(data) {
         console.log(data);
+        siftText(data);
     });
 
  // personVM.name.subscribe(function(newValue) {
