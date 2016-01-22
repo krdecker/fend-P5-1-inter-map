@@ -20,10 +20,16 @@
     </ul>
 
     <ul id="spot-list" data-bind="foreach: spotList, attr: {style: mapDisplay}">
-        <li class="spot" data-bind="text: name"></li>
+        <li class="spot" data-bind="text: name, click: $parent.spotPick"></li>
     </ul>
     <div id="selector" data-bind="attr: {style: mapDisplay}">
-        <input data-bind="value: choice" />
+    <!--     <input id="select-slot" data-bind="textInput: selectSlot, "/> -->
+
+        <input id="select-slot" data-bind="hasFocus: isSelected, textInput: selectSlot" />
+        <button id="filter-button" data-bind="click: setFilterSelected">FILTER</button>
+        <span data-bind="visible: isSelected"> ON </span>
+
+        <!-- , event: {keypress: filterSpots}" /> -->
     </div>
     <div id="map-box" data-bind="attr: {style: mapDisplay}">
         <div id="map-div"></div>
@@ -45,7 +51,8 @@
         </div>
 -->
 
-    <script src="js/lib/knockout-3.2.0.js"></script>
+    <script src="./node_modules/knockout/build/output/knockout-latest.js"></script>
+    <script src="./node_modules/jquery/dist/jquery.js"></script>
     <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBL3i9VGUZEVT-ELGUb2vAG0q27WdoQT94&callback=initMap" async defer></script>
     <script src="js/app.js"></script>

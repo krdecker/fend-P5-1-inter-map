@@ -12,5 +12,9 @@
     "#front-end-udacity"
   ],
   "author": "KR Decker",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "jquery": "^2.2.0",
+    "knockout": "^3.4.0"
+  }
 }

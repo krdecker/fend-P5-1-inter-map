@@ -126,7 +126,7 @@ var optionModels = [
         { name: "To Do", model: TodoModel }
 ];
 
-///////////////MAP API///////////////////////////
+///////////////MAP API VIEWMODEL///////////////////////////
 
 var map;
 
@@ -180,7 +180,7 @@ function initMap() {
 }
 
 function resetMap(model) {
-    console.log("In resetMap: " + model.zoomLevel);
+    //console.log("In resetMap: " + model.zoomLevel);
 
     // Create a map object and specify the DOM element for display.
     map = new google.maps.Map(document.getElementById('map-div'), mapOptions );
@@ -190,7 +190,7 @@ function resetMap(model) {
 
     for (var i in model.spots) {
         var spot = model.spots[i];
-        console.log(spot.name);
+        //console.log(spot.name);
         var marker = getMarker(spot.location, spot.name, map);
         markers.push(marker);
     }
@@ -216,63 +216,30 @@ function resetMap(model) {
 }
 /////////////////KO VIEWMODEL///////////////////
 
-// this is a Cat class: he (Ben) made a viewmodel object for each cat
-// var Cat = function (data) { // data will be an (array of) object literal(s)
-//     this.clickCount = ko.observable(data.clickCount);
-//     this.name = ko.observable(data.name);
-//     this.imgSrc = ko.observable(data.imgSrc);
-//     this.imgAttribution = ko.observable(data.imgAttrib);
-//     this.nickNames = ko.observableArray(data.nickNames);
-//     this.levels = data.levels;
-//     this.catLevel = ko.computed( function () {
-//         var age = 0;
-//         age = Math.floor(this.clickCount() / 16);
-//         if (age >= this.levels.length) age = this.levels.length - 1;
-//         return this.levels[age];
-//     }, this);
-// }
-
-// ???? so maybe a MapView class, instances for  trainVM, busVM, eatsVM etc
-
-var optionData;
+var optionData; // global to pass pointer to data object
 
 
 var ViewModel = function () {
     var self = this;
 
+    // Data
+
     // can data bind on 'constants'; don't need the overhead of an .observable
-    this.station = "Broadway-Commercial"; //ko.observable("Broadway-Commercial");
+    self.station = "Broadway-Commercial"; //ko.observable("Broadway-Commercial");
+    self.optList = ["Trains","Buses","Eats","Shops","To Do"]; //ko.observableArray(["Trains","Buses","Eats","Shops","To Do"]);
+    self.spotList = ko.observableArray([]);
+    self.safeSpotList = [];
+    self.choice = ko.observable();
+    self.mapDisplay = ko.observable("display:none");
+    self.menuDisplay = ko.observable("display:block");
+    self.selectSlot = ko.observable();
 
-    this.optList = ["Trains","Buses","Eats","Shops","To Do"]; //ko.observableArray(["Trains","Buses","Eats","Shops","To Do"]);
-    this.spotList = ko.observableArray([]);
-    this.choice = ko.observable();
-    this.mapDisplay = ko.observable("display:none");
-    this.menuDisplay = ko.observable("display:block");
 
+    // Behaviours
 
-    // this.catList = ko.observableArray([]);
-    // initialCats.forEach( function(catItem) {
-    //     self.catList.push( new Cat(catItem) );
-    // });
+    self.changeOpt = function (clickedOpt) {
 
-    //this.currentOpt = ko.observable( this.optList[0] );
-
-    // this.incrementCounter = function () { // when this func is called on click binding
-    //                                     // context is with:currentCat ie = this
-    //                                     // so need to use self to pass ViewModel
-    //                                     // OR ELSE:
-    //                                     // this.clickCount(this.clickCount()+1);
-
-    //     self.currentCat().clickCount(self.currentCat().clickCount() + 1);
-    // };
-    // this.incrementCounter = function () {
-    //     this.clickCount(this.clickCount() + 1);
-    // }
-    // this.changeCat = function (clickedCat) { self.currentCat(clickedCat) };
-
-    this.changeOpt = function (clickedOpt) {
-
-        console.log("Option= " + clickedOpt);
+        //console.log("Option= " + clickedOpt);
 
         for (var i in optionModels){
             //console.log(optionModels[i].name);
@@ -288,19 +255,72 @@ var ViewModel = function () {
         //initMap();
         self.buildSpotlist(optionData);
 
-    }
+    };
 
-    this.menuReturn = function () {
+    // bound to appropriate DOM elements
+    self.menuReturn = function () {
         self.mapDisplay("display:none");
         self.menuDisplay("display:block");
-    }
+    };
 
-    this.buildSpotlist = function(model){
+    self.buildSpotlist = function(model){
         //console.log("Building Spotlist from: data object");
         //console.log("spotList start ");
         //console.log("eg: " + model.spots[0].name);
+
+        // initialise observableArray with array from the model data
         self.spotList(model.spots);
-    }
+        self.safeSpotList = self.spotList();
+    };
+
+    self.Selection = function () {
+        console.log("Selector says:" + change);
+    };
+
+    self.spotPick = function () {
+        console.log(this.name);
+    };
+
+    self.isSelected = ko.observable(false);
+    self.setFilterSelected = function() {
+        this.isSelected(true);
+
+    };
+
+    self.selectSlot.subscribe(function(data) {
+        console.log(data);
+    });
+
+ // personVM.name.subscribe(function(newValue) {
+ //            console.log("The person's new name is " + newValue);
+ //        });
+    // self.filterSpotlist = ko.computed (function () {
+    //     self.spotList(self.safeSpotList) // re-set list
+    //     console.log(self.spotList());
+    //     console.log(self.selectSlot());
+    //     self.spotList( siftText( self.selectSlot() ) );
+
+    //     function siftText(inputvalue) {
+    //         var re = new RegExp(inputvalue, ['i']);
+    //         var temp = [];
+
+    //         self.spotList().forEach(function(element,index,array) {
+    //             if (re.test(element.name)) {
+    //                 temp.push(element);
+    //                 console.log("and " + element.name);
+    //             }
+    //         });
+    //         return temp;
+    //     }
+    // });
+
+    // self.inFilteredSpots = ko.computed( function () {
+    //     //check membership of list item in the filtered array
+    //     if (self.filteredSpots().indexOf(this) = -1) return false;
+    //     return true;
+    // });
+
+    // maybe try data-bind="visible: filteredSpots.indexOf(this) > -1"
 };
 
 ko.applyBindings(new ViewModel())
