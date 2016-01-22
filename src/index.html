@@ -27,7 +27,7 @@
 
         <input id="select-slot" data-bind="hasFocus: isSelected, textInput: selectSlot" />
         <button id="filter-button" data-bind="click: setFilterSelected">FILTER</button>
-        <span data-bind="visible: isSelected"> ON </span>
+        <span id="aster" data-bind="visible: isSelected"> * </span>
 
         <!-- , event: {keypress: filterSpots}" /> -->
     </div>
@@ -37,19 +37,7 @@
 
 
 
-<!--
-        <div id="opt" data-bind="with: currentOpt">
-        <h2 id="opt-name" data-bind="text: name"></h2>
-        <h3 id="opt-level" data-bind="text: optLevel"></h3>
-        <div id="opt-count" data-bind="text: clickCount"></div>
-        <img id="opt-img" src="" alt="options"
-            data-bind="attr: {src: imgSrc}, click: $parent.routeOpter">
-        <h3>Nick-names:</h3>
-        <ul data-bind="foreach: nickNames">
-            <li data-bind="text: $data"></li>
-        </ul>
-        </div>
--->
+
 
     <script src="./node_modules/knockout/build/output/knockout-latest.js"></script>
     <script src="./node_modules/jquery/dist/jquery.js"></script>

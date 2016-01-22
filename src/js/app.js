@@ -9,7 +9,7 @@
 // json objects returned from apis
 // lists of sites on each map-view
 
-// trains data: ???
+// trains data:
 var TrainsModel = {
     zoomLevel: 19,
     center: {lat: 49.262219, lng: -123.069252},
@@ -44,7 +44,7 @@ var BusesModel = {
 
 // eats data: an array of places
 var EatsModel = {
-    zoomLevel: 20,
+    zoomLevel: 19,
     center: {lat: 49.262252, lng: -123.069801},
     spots: [
         {
@@ -66,22 +66,55 @@ var EatsModel = {
         {
             name: "Blenz Coffee",
             location: {lat: 49.262534, lng: -123.069529}
+        },
+        {
+            name: "Megabite Pizza",
+            location: {lat: 49.262779, lng: -123.069317}
+        },
+        {
+            name: "Broadway Station Sushi",
+            location: {lat: 49.262084, lng: -123.070962}
         }
     ]
 };
 
 // shops data:
 var ShopsModel = {
-    zoomLevel: 17,
+    zoomLevel: 18,
     spots: [
         {
-            name: "Shopper's Drug Mart",
+            name: "Shoppers Drug Mart",
             location: {lat: 49.262576, lng: -123.068751}
         },
         {
             name: "Bank of Montreal",
             location: {lat: 49.262156, lng: -123.070113},
+        },
+        {
+            name: "Safeway Groceries",
+            location: {lat: 49.261791, lng: -123.068534}
+        },
+        {
+            name: "Orchid Beauty Centre",
+            location: {lat: 49.262184, lng: -123.070828}
+        },
+        {
+            name: "Labour Ready Casual Work",
+            location: {lat: 49.262161, lng: -123.070380}
+        },
+        {
+            name: "CI Bank of Commerce",
+            location: {lat: 49.262074, lng: -123.069409}
+        },
+        {
+            name: "Bank Of Nova Scotia",
+            location: {lat: 49.262550, lng: -123.070002}
+        },
+        {
+            name: "Donald's Market",
+            location: {lat: 49.264190, lng: -123.069981}
         }
+
     ]
 };
 
@@ -112,8 +145,15 @@ var TodoModel = {
         {
             name: "St.Augustine's Local Beer Pub",
             location: {lat: 49.263781, lng: -123.069252}
+        },
+        {
+            name: "Toby's Tavern",
+            location: {lat: 49.260229, lng: -123.070182}
+        },
+        {
+            name: "Suicide Attempt Counselling Service",
+            location: {lat: 49.262358, lng: -123.070521}
         }
-
     ]
 };
 
@@ -125,6 +165,7 @@ var optionModels = [
         { name: "Shops", model: ShopsModel },
         { name: "To Do", model: TodoModel }
 ];
+
 
 ///////////////MAP API VIEWMODEL///////////////////////////
 
@@ -161,15 +202,7 @@ var mapOptions = {
         styles: cleanSweep
     }
 
-// function initMap() {
-//     var mapOptions = {
-//         disableDefaultUI: true
-//     };
 
-//     // This next line makes `map` a new Google Map JavaScript Object and attaches it to
-//     // <div id="map-box">, which is appended as part of an exercise late in the course.
-//     map = new google.maps.Map(document.querySelector('#map-div'), mapOptions);
-// }
 var markers = [],
     infoWindow;
 
@@ -215,6 +248,12 @@ function resetMap(model) {
 
 }
 
+//TODO: take the markers building loop above and put it in
+// a function setMarkers(<array>)
+// can then feed it filtered spots array from the user input
+// and get rid of toggleMarker
+
+////////////UTILITIES/////////////////////////
 function toggleMarker(name, toss) {
     //console.log("in toggleMarker: " + name + " wants to " + toss);
     for (var i = markers.length - 1; i >= 0; i--) {
@@ -228,21 +267,22 @@ function toggleMarker(name, toss) {
     };
 }
 
-function siftText(inputvalue) {
-    var re = new RegExp(inputvalue, ['i']);
-    var strElements = document.getElementsByClassName("spot");
+// DEPRECATED - USE KO.OBSERVABLEARRAY INSTEAD OF DIRECTLY MANIPULATING DOM
+// function siftText(inputvalue) {
+//     var re = new RegExp(inputvalue, ['i']);
+//     var strElements = document.getElementsByClassName("spot");
 
-    for(var i=0; i<strElements.length; i++) {
-        if (re.test(strElements[i].textContent)) {
-            strElements[i].setAttribute("style", "visibility:visible");
-            toggleMarker(strElements[i].textContent, "show");
-        }
-        else {
-            strElements[i].setAttribute("style", "visibility:hidden");
-            toggleMarker(strElements[i].textContent, "hide");
-        }
-    };
-}
+//     for(var i=0; i<strElements.length; i++) {
+//         if (re.test(strElements[i].textContent)) {
+//             strElements[i].setAttribute("style", "visibility:visible");
+//             toggleMarker(strElements[i].textContent, "show");
+//         }
+//         else {
+//             strElements[i].setAttribute("style", "visibility:hidden");
+//             toggleMarker(strElements[i].textContent, "hide");
+//         }
+//     };
+// }
 /////////////////KO VIEWMODEL///////////////////
 
 var optionData; // global to pass pointer to data object
@@ -277,11 +317,11 @@ var ViewModel = function () {
             }
         };
 
+        // hide menu and show map in selected category
         self.menuDisplay("display:none");
         self.mapDisplay("display:block");
-        //console.log(optionData.zoomLevel);
+
         resetMap(optionData);
-        //initMap();
         self.buildSpotlist(optionData);
 
     };
@@ -290,6 +330,8 @@ var ViewModel = function () {
     self.menuReturn = function () {
         self.mapDisplay("display:none");
         self.menuDisplay("display:block");
+        //TODO: reset filterSlot and map markers
+        //ie clean slate
     };
 
     self.buildSpotlist = function(model){
@@ -315,10 +357,24 @@ var ViewModel = function () {
         this.isSelected(true);
     };
 
+
     self.selectSlot.subscribe(function(data) {
         console.log(data);
-        siftText(data);
+        self.spotList(filterList(data, optionData.spots));
     });
+
+
+    function filterList(userText, modelArray) {
+         var result=[],
+             re = new RegExp(userText, ['i']);
+
+         modelArray.forEach( function(element, index, array) {
+            //console.log(element.name);
+            if (re.test(element.name)) result.push(element);
+         });
+         return result;
+    }
+
 
  // personVM.name.subscribe(function(newValue) {
  //            console.log("The person's new name is " + newValue);

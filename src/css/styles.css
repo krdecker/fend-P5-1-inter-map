@@ -76,6 +76,7 @@ body {
 #selector {
     height: 8%;
     padding-left: 5%;
+    display: block;
 }
 #select-slot {
     width: 60%;
@@ -89,6 +90,9 @@ body {
     background-color: red;
     font-size: 3em;
     border-radius: 8%;
+}
+#aster {
+    font-size: 4em;
 }
 /* green bg red button yellow text */
 /*body {
