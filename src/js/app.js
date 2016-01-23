@@ -221,51 +221,111 @@ function resetMap(model) {
     map.setZoom(model.zoomLevel);
     map.setCenter(model.center);
 
-    for (var i in model.spots) {
-        var spot = model.spots[i];
-        //console.log(spot.name);
+    setMarkers(model.spots);
+}
+
+function setMarkers(spots) {
+    for (var i in spots) {
+        var spot = spots[i];
+
         var marker = getMarker(spot.location, spot.name, map);
         markers.push(marker);
     }
-
-    function getMarker (location, name, map) {
-        var marker = new google.maps.Marker({
-            position: location,
-            title: spot.name,
-            map: map
-        });
-        // add an Info Window on click event
-        google.maps.event.addListener(marker, 'click', function() {
-            if (typeof infoWindow != 'undefined') infoWindow.close(); // unique opening
-            infoWindow = new google.maps.InfoWindow({
-                content: name // TODO change this to <img src=''>
-            });
-            infoWindow.open(map, marker);
-        });
-        return marker;
-    }
-
-
 }
+
+function getMarker (location, name, map) {
+    var marker = new google.maps.Marker({
+        position: location,
+        title: name,
+        map: map
+    });
+    // add an Info Window on click event
+    google.maps.event.addListener(marker, 'click', function() {
+        if (typeof infoWindow != 'undefined') infoWindow.close(); // unique opening
+        infoWindow = new google.maps.InfoWindow({
+            content: name // TODO change this to <img src=''>
+        });
+        infoWindow.open(map, marker);
+    });
+    return marker;
+}
+
+
+// interface to filtration system
+function reSetMarkers(spots) {
+    console.log("got spots, starting with:" + spots[0].name)
+    var names = [];
+
+    for (var i in spots) names.push(spots[i].name);
+
+    for (var j in markers) {
+        marker = markers[j];
+        console.log("Checking: " + marker.title);
+        if (names.indexOf(marker.title) > -1) marker.setMap(map);
+        else marker.setMap(null);
+    }
+}
+
 
 //TODO: take the markers building loop above and put it in
 // a function setMarkers(<array>)
 // can then feed it filtered spots array from the user input
 // and get rid of toggleMarker
 
+// from GMaps API:
+// function setMarkers(map) {
+//   // Adds markers to the map.
+
+//   // Marker sizes are expressed as a Size of X,Y where the origin of the image
+//   // (0,0) is located in the top left of the image.
+
+//   // Origins, anchor positions and coordinates of the marker increase in the X
+//   // direction to the right and in the Y direction down.
+//   var image = {
+//     url: 'images/beachflag.png',
+//     // This marker is 20 pixels wide by 32 pixels high.
+//     size: new google.maps.Size(20, 32),
+//     // The origin for this image is (0, 0).
+//     origin: new google.maps.Point(0, 0),
+//     // The anchor for this image is the base of the flagpole at (0, 32).
+//     anchor: new google.maps.Point(0, 32)
+//   };
+//   // Shapes define the clickable region of the icon. The type defines an HTML
+//   // <area> element 'poly' which traces out a polygon as a series of X,Y points.
+//   // The final coordinate closes the poly by connecting to the first coordinate.
+//   var shape = {
+//     coords: [1, 1, 1, 20, 18, 20, 18, 1],
+//     type: 'poly'
+//   };
+//   for (var i = 0; i < beaches.length; i++) {
+//     var beach = beaches[i];
+//     var marker = new google.maps.Marker({
+//       position: {lat: beach[1], lng: beach[2]},
+//       map: map,
+//       icon: image,
+//       shape: shape,
+//       title: beach[0],
+//       zIndex: beach[3]
+//     });
+//   }
+// }
+
+
 ////////////UTILITIES/////////////////////////
-function toggleMarker(name, toss) {
-    //console.log("in toggleMarker: " + name + " wants to " + toss);
-    for (var i = markers.length - 1; i >= 0; i--) {
-        var marker = markers[i];
-        if (marker.title == name) {
-            if (toss == "hide") {
-                marker.setMap(null);
-            }
-            else marker.setMap(map);
-        }
-    };
-}
+
+//  DEPRECATED - HOOKED RESET MARKERS INTO THE KO.OBSERVABLEARRAY INSTEAD
+// function toggleMarker(name, toss) {
+//     //console.log("in toggleMarker: " + name + " wants to " + toss);
+//     for (var i = markers.length - 1; i >= 0; i--) {
+//         var marker = markers[i];
+//         if (marker.title == name) {
+//             if (toss == "hide") {
+//                 marker.setMap(null);
+//             }
+//             else marker.setMap(map);
+//         }
+//     };
+// }
 
 // DEPRECATED - USE KO.OBSERVABLEARRAY INSTEAD OF DIRECTLY MANIPULATING DOM
 // function siftText(inputvalue) {
@@ -341,7 +401,7 @@ var ViewModel = function () {
 
         // initialise observableArray with array from the model data
         self.spotList(model.spots);
-        self.safeSpotList = self.spotList();
+
     };
 
     self.Selection = function () {
@@ -361,6 +421,8 @@ var ViewModel = function () {
     self.selectSlot.subscribe(function(data) {
         console.log(data);
         self.spotList(filterList(data, optionData.spots));
+        reSetMarkers(self.spotList());
+        //resetMap(self.spotList);
     });
 
 

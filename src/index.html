@@ -15,6 +15,7 @@
         <span><img id="burger" src="img/burger.png" data-bind="click: menuReturn"></span>
         <h1 class="station-title" data-bind="attr: {style: menuDisplay}">Station</h1>
     </div>
+
     <ul id="opt-list" data-bind="foreach: optList, attr: {style: menuDisplay}">
         <li class="option" data-bind="text: $data, click: $parent.changeOpt"></li>
     </ul>
@@ -22,6 +23,7 @@
     <ul id="spot-list" data-bind="foreach: spotList, attr: {style: mapDisplay}">
         <li class="spot" data-bind="text: name, click: $parent.spotPick"></li>
     </ul>
+
     <div id="selector" data-bind="attr: {style: mapDisplay}">
     <!--     <input id="select-slot" data-bind="textInput: selectSlot, "/> -->
 
