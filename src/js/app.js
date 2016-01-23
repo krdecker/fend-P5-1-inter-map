@@ -395,13 +395,7 @@ var ViewModel = function () {
     };
 
     self.buildSpotlist = function(model){
-        //console.log("Building Spotlist from: data object");
-        //console.log("spotList start ");
-        //console.log("eg: " + model.spots[0].name);
-
-        // initialise observableArray with array from the model data
         self.spotList(model.spots);
-
     };
 
     self.Selection = function () {
@@ -417,79 +411,25 @@ var ViewModel = function () {
         this.isSelected(true);
     };
 
-
     self.selectSlot.subscribe(function(data) {
         console.log(data);
         self.spotList(filterList(data, optionData.spots));
         reSetMarkers(self.spotList());
         //resetMap(self.spotList);
     });
-
-
-    function filterList(userText, modelArray) {
-         var result=[],
-             re = new RegExp(userText, ['i']);
-
-         modelArray.forEach( function(element, index, array) {
-            //console.log(element.name);
-            if (re.test(element.name)) result.push(element);
-         });
-         return result;
-    }
-
-
- // personVM.name.subscribe(function(newValue) {
- //            console.log("The person's new name is " + newValue);
- //        });
-    // self.filterSpotlist = ko.computed (function () {
-    //     self.spotList(self.safeSpotList) // re-set list
-    //     console.log(self.spotList());
-    //     console.log(self.selectSlot());
-    //     self.spotList( siftText( self.selectSlot() ) );
-
-    //     function siftText(inputvalue) {
-    //         var re = new RegExp(inputvalue, ['i']);
-    //         var temp = [];
-
-    //         self.spotList().forEach(function(element,index,array) {
-    //             if (re.test(element.name)) {
-    //                 temp.push(element);
-    //                 console.log("and " + element.name);
-    //             }
-    //         });
-    //         return temp;
-    //     }
-    // });
-
-    // self.inFilteredSpots = ko.computed( function () {
-    //     //check membership of list item in the filtered array
-    //     if (self.filteredSpots().indexOf(this) = -1) return false;
-    //     return true;
-    // });
-
-    // maybe try data-bind="visible: filteredSpots.indexOf(this) > -1"
 };
 
-ko.applyBindings(new ViewModel())
+ko.applyBindings(new ViewModel());
 
-//initMap()
+function filterList(userText, modelArray) {
+     var result=[],
+         re = new RegExp(userText, ['i']);
 
-// from ISS API website: (maybe useful for translink api)
-
-// $.getJSON('http://api.open-notify.org/iss-pass.json?lat=45.0&lon=-122.3&alt=20&n=5&callback=?', function(data) {
-//     data['response'].forEach(function (d) {
-//         var date = new Date(d['risetime']*1000);
-//          $('#isspass').append('<li>' + date.toString() + '</li>');
-//     });
-// });
-
-// $.getJSON('http://api.open-notify.org/astros.json?callback=?', function(data) {
-//     var number = data['number'];
-//     $('#spacepeeps').html(number);
-
-//     data['people'].forEach(function (d) {
-//          $('#astronames').append('<li>' + d['name'] + '</li>');
-//     });
-// });
+     modelArray.forEach( function(element, index, array) {
+        //console.log(element.name);
+        if (re.test(element.name)) result.push(element);
+     });
+     return result;
+}
 
 
