@@ -207,7 +207,7 @@ var markers = [],
     infoWindow;
 
 function initMap() {
-    console.log("In initMap");
+    // console.log("In initMap");
     // Create a map object and specify the DOM element for display.
     map = new google.maps.Map(document.getElementById('map-div'), mapOptions );
 }
@@ -253,24 +253,20 @@ function getMarker (location, name, map) {
 
 // interface to filtration system
 function reSetMarkers(spots) {
-    console.log("got spots, starting with:" + spots[0].name)
+    //console.log("got spots, starting with:" + spots[0].name)
     var names = [];
 
     for (var i in spots) names.push(spots[i].name);
 
     for (var j in markers) {
         marker = markers[j];
-        console.log("Checking: " + marker.title);
+        //console.log("Checking: " + marker.title);
         if (names.indexOf(marker.title) > -1) marker.setMap(map);
         else marker.setMap(null);
     }
 }
 
 
-//TODO: take the markers building loop above and put it in
-// a function setMarkers(<array>)
-// can then feed it filtered spots array from the user input
-// and get rid of toggleMarker
 
 // from GMaps API:
 // function setMarkers(map) {
@@ -356,12 +352,12 @@ var ViewModel = function () {
     // can data bind on 'constants'; don't need the overhead of an .observable
     self.station = "Broadway-Commercial"; //ko.observable("Broadway-Commercial");
     self.optList = ["Trains","Buses","Eats","Shops","To Do"]; //ko.observableArray(["Trains","Buses","Eats","Shops","To Do"]);
+
     self.spotList = ko.observableArray([]);
-    self.safeSpotList = [];
-    self.choice = ko.observable();
+
     self.mapDisplay = ko.observable("display:none");
     self.menuDisplay = ko.observable("display:block");
-    self.selectSlot = ko.observable();
+    self.filterSlot = ko.observable();
 
 
     // Behaviours
@@ -390,32 +386,27 @@ var ViewModel = function () {
     self.menuReturn = function () {
         self.mapDisplay("display:none");
         self.menuDisplay("display:block");
-        //TODO: reset filterSlot and map markers
-        //ie clean slate
+
+        // reset filterSlot
+        self.filterSlot("");
+        self.isSelected(false);
+
     };
 
     self.buildSpotlist = function(model){
         self.spotList(model.spots);
     };
 
-    self.Selection = function () {
-        console.log("Selector says:" + change);
-    };
-
-    self.spotPick = function () {
-        console.log(this.name);
-    };
-
     self.isSelected = ko.observable(false);
+
     self.setFilterSelected = function() {
         this.isSelected(true);
     };
 
-    self.selectSlot.subscribe(function(data) {
+    self.filterSlot.subscribe(function(data) {
         console.log(data);
         self.spotList(filterList(data, optionData.spots));
         reSetMarkers(self.spotList());
-        //resetMap(self.spotList);
     });
 };
 

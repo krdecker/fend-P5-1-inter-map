@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Station Tout</title>
@@ -9,6 +10,7 @@
 -->
     <link href="css/styles.css" rel="stylesheet">
 </head>
+
 <body>
     <div id="top">
         <h1 class="station-title" data-bind="text: station, attr: {style: menuDisplay}"></h1>
@@ -25,7 +27,7 @@
     </ul>
 
     <div id="selector" data-bind="attr: {style: mapDisplay}">
-        <input id="select-slot" data-bind="hasFocus: isSelected, textInput: selectSlot" />
+        <input id="filter-slot" data-bind="hasFocus: isSelected, textInput: filterSlot" />
         <button id="filter-button" data-bind="click: setFilterSelected">FILTER</button>
         <span id="aster" data-bind="visible: isSelected"> * </span>
     </div>
