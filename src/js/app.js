@@ -221,10 +221,10 @@ function resetMap(model) {
     map.setZoom(model.zoomLevel);
     map.setCenter(model.center);
 
-    setMarkers(model.spots);
+    setMarkers(model.spots, map);
 }
 
-function setMarkers(spots) {
+function setMarkers(spots, map) {
     for (var i in spots) {
         var spot = spots[i];
 
@@ -234,16 +234,34 @@ function setMarkers(spots) {
 }
 
 function getMarker (location, name, map) {
+    var markColor = "9fcf2f";
+
     var marker = new google.maps.Marker({
         position: location,
         title: name,
-        map: map
+        map: map,
+        opacity: 0.5,
+        icon: {
+            url: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + markColor,
+            size: null, //new google.maps.Size(20, 32),
+            origin: null, //new google.maps.Point(0, 0),
+            anchor: null, //new google.maps.Point(10, 32),
+            scaledSize: new google.maps.Size(60, 108)
+        }
     });
+    // "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|FFFF00",
+    // null,  size is determined at runtime
+    // null, /* origin is 0,0 */
+    // null, /* anchor is bottom center of the scaled image */
+    // new google.maps.Size(42, 68)
+
     // add an Info Window on click event
     google.maps.event.addListener(marker, 'click', function() {
         if (typeof infoWindow != 'undefined') infoWindow.close(); // unique opening
         infoWindow = new google.maps.InfoWindow({
-            content: name // TODO change this to <img src=''>
+            content: '<div style="height:120px;width:360px;font-size:4em;color:skyblue"><span><strong>'
+                + name + '</strong></span></div>' // TODO change this to <img src=''>
+
         });
         infoWindow.open(map, marker);
     });
@@ -252,7 +270,7 @@ function getMarker (location, name, map) {
 
 
 // interface to filtration system
-function reSetMarkers(spots) {
+function reSetMarkers(spots, map, markers) {
     //console.log("got spots, starting with:" + spots[0].name)
     var names = [];
 
@@ -307,38 +325,7 @@ function reSetMarkers(spots) {
 // }
 
 
-////////////UTILITIES/////////////////////////
 
-//  DEPRECATED - HOOKED RESET MARKERS INTO THE KO.OBSERVABLEARRAY INSTEAD
-// function toggleMarker(name, toss) {
-//     //console.log("in toggleMarker: " + name + " wants to " + toss);
-//     for (var i = markers.length - 1; i >= 0; i--) {
-//         var marker = markers[i];
-//         if (marker.title == name) {
-//             if (toss == "hide") {
-//                 marker.setMap(null);
-//             }
-//             else marker.setMap(map);
-//         }
-//     };
-// }
-
-// DEPRECATED - USE KO.OBSERVABLEARRAY INSTEAD OF DIRECTLY MANIPULATING DOM
-// function siftText(inputvalue) {
-//     var re = new RegExp(inputvalue, ['i']);
-//     var strElements = document.getElementsByClassName("spot");
-
-//     for(var i=0; i<strElements.length; i++) {
-//         if (re.test(strElements[i].textContent)) {
-//             strElements[i].setAttribute("style", "visibility:visible");
-//             toggleMarker(strElements[i].textContent, "show");
-//         }
-//         else {
-//             strElements[i].setAttribute("style", "visibility:hidden");
-//             toggleMarker(strElements[i].textContent, "hide");
-//         }
-//     };
-// }
 /////////////////KO VIEWMODEL///////////////////
 
 var optionData; // global to pass pointer to data object
@@ -397,6 +384,23 @@ var ViewModel = function () {
         self.spotList(model.spots);
     };
 
+
+    // TODO: user makes a selection to display Info Window from marker
+
+    // selection can occur directly, ie, spotPick
+
+    // or indirectly, i) by text filtering the list down to one spot and prressing Enter
+
+    // or at any time by clicking the marker
+
+    self.spotPick = function () {
+        console.log(this.name);
+    };
+
+    self.Selection = function () {
+       console.log("Selector says:" + change);
+    };
+
     self.isSelected = ko.observable(false);
 
     self.setFilterSelected = function() {
@@ -406,7 +410,7 @@ var ViewModel = function () {
     self.filterSlot.subscribe(function(data) {
         console.log(data);
         self.spotList(filterList(data, optionData.spots));
-        reSetMarkers(self.spotList());
+        reSetMarkers(self.spotList(), map, markers);
     });
 };
 
