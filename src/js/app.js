@@ -240,7 +240,7 @@ function getMarker (location, name, map) {
         position: location,
         title: name,
         map: map,
-        opacity: 0.5,
+        opacity: 0.4,
         icon: {
             url: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + markColor,
             size: null, //new google.maps.Size(20, 32),
@@ -255,19 +255,39 @@ function getMarker (location, name, map) {
     // null, /* anchor is bottom center of the scaled image */
     // new google.maps.Size(42, 68)
 
-    // add an Info Window on click event
+    //marker.addListener('click', toggleBounce);
+
+    // add Bounce & an Info Window on click event
+
+// INFO WINDOW DEF
+    var css = '"height:100%;width:100%;font-size:4em;color:blue;background-color:orange;padding:5px"';
+    var markerClickInfoWindowContent =
+    '<div style=' + css
+    + '><strong>'
+    + marker.title + '</strong></div>' ;
+        // TODO  this to <img src=''> etc. for Ajax content
+
     google.maps.event.addListener(marker, 'click', function() {
+        marker.setAnimation(google.maps.Animation.BOUNCE);
         if (typeof infoWindow != 'undefined') infoWindow.close(); // unique opening
         infoWindow = new google.maps.InfoWindow({
-            content: '<div style="height:120px;width:360px;font-size:4em;color:skyblue"><span><strong>'
-                + name + '</strong></span></div>' // TODO change this to <img src=''>
-
+            content: markerClickInfoWindowContent
         });
-        infoWindow.open(map, marker);
+        setTimeout( function() {
+            infoWindow.open(map, marker);
+            if (marker.getAnimation() !== null) marker.setAnimation(null);
+        }, 1500);
     });
     return marker;
 }
 
+// function toggleBounce() {
+//   if (marker.getAnimation() !== null) {
+//     marker.setAnimation(null);
+//   } else {
+//     marker.setAnimation(google.maps.Animation.BOUNCE);
+//   }
+// }
 
 // interface to filtration system
 function reSetMarkers(spots, map, markers) {

@@ -36,7 +36,15 @@
         <div id="map-div"></div>
     </div>
 
-
+    <script>
+    // INFO WINDOW DEF
+        var css = '"height:150px;width:300px;font-size:4em;color:blue;background-color:orange"';
+        var markerClickInfoWindowContent =
+        '<div style=' + css
+        + '><span><strong>'
+        + marker.title + '</strong></span></div>' ;
+        // TODO  this to <img src=''> etc. for Ajax content
+    </script>
     <script src="./node_modules/knockout/build/output/knockout-latest.js"></script>
     <script src="./node_modules/jquery/dist/jquery.js"></script>
     <script
