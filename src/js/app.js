@@ -80,7 +80,7 @@ var EatsModel = {
 
 // shops data:
 var ShopsModel = {
-    zoomLevel: 18,
+    zoomLevel: 17,
     spots: [
         {
             name: "Shoppers Drug Mart",
@@ -228,7 +228,7 @@ function setMarkers(spots, map) {
     for (var i in spots) {
         var spot = spots[i];
 
-        var marker = getMarker(spot.location, spot.name, map);
+        marker = getMarker(spot.location, spot.name, map);
         markers.push(marker);
     }
 }
@@ -255,39 +255,36 @@ function getMarker (location, name, map) {
     // null, /* anchor is bottom center of the scaled image */
     // new google.maps.Size(42, 68)
 
-    //marker.addListener('click', toggleBounce);
+
 
     // add Bounce & an Info Window on click event
 
 // INFO WINDOW DEF
+// this will eventually contain info return by Ajax calls to APIs
+
     var css = '"height:100%;width:100%;font-size:4em;color:blue;background-color:orange;padding:5px"';
-    var markerClickInfoWindowContent =
+    var infoContent =
     '<div style=' + css
     + '><strong>'
-    + marker.title + '</strong></div>' ;
+    + name + '</strong></div>' ;
         // TODO  this to <img src=''> etc. for Ajax content
 
-    google.maps.event.addListener(marker, 'click', function() {
-        marker.setAnimation(google.maps.Animation.BOUNCE);
-        if (typeof infoWindow != 'undefined') infoWindow.close(); // unique opening
-        infoWindow = new google.maps.InfoWindow({
-            content: markerClickInfoWindowContent
-        });
-        setTimeout( function() {
-            infoWindow.open(map, marker);
-            if (marker.getAnimation() !== null) marker.setAnimation(null);
-        }, 1500);
+     google.maps.event.addListener(marker, 'click', function() {
+                  marker.setAnimation(google.maps.Animation.BOUNCE);
+            if (typeof infoWindow != 'undefined') infoWindow.close(); // unique opening
+            infoWindow = new google.maps.InfoWindow({
+                content: infoContent
+            });
+            setTimeout( function() {
+                infoWindow.open(map, marker);
+                if (marker.getAnimation() !== null) marker.setAnimation(null);
+            }, 1200);
     });
+
     return marker;
 }
 
-// function toggleBounce() {
-//   if (marker.getAnimation() !== null) {
-//     marker.setAnimation(null);
-//   } else {
-//     marker.setAnimation(google.maps.Animation.BOUNCE);
-//   }
-// }
+
 
 // interface to filtration system
 function reSetMarkers(spots, map, markers) {
@@ -415,6 +412,11 @@ var ViewModel = function () {
 
     self.spotPick = function () {
         console.log(this.name);
+        for (var i in markers) {
+            var marker = markers[i];
+            if (marker.title == this.name)
+                google.maps.event.trigger(marker, 'click');
+        }
     };
 
     self.Selection = function () {
