@@ -368,10 +368,7 @@ var ViewModel = function () {
 
     self.changeOpt = function (clickedOpt) {
 
-        //console.log("Option= " + clickedOpt);
-
         for (var i in optionModels){
-            //console.log(optionModels[i].name);
             if (optionModels[i].name == clickedOpt) {
                 optionData = optionModels[i].model;
             }
@@ -404,11 +401,11 @@ var ViewModel = function () {
 
     // TODO: user makes a selection to display Info Window from marker
 
-    // selection can occur directly, ie, spotPick
+    // selection can occur directly, ie, spotPick  ***DONE
 
-    // or indirectly, i) by text filtering the list down to one spot and prressing Enter
+    // or indirectly,  by text filtering the list down to one spot and pressing Enter
 
-    // or at any time by clicking the marker
+    // or at any time by clicking the marker ***DONE
 
     self.spotPick = function () {
         console.log(this.name);
@@ -429,11 +426,44 @@ var ViewModel = function () {
         this.isSelected(true);
     };
 
+    // self.filterSlot = function(data, event) {
+    //     console.log(data);
+    //     console.log(event.keyCode);
+    // }
+
     self.filterSlot.subscribe(function(data) {
         console.log(data);
+        if (typeof infoWindow != 'undefined')
+            infoWindow.close(); // unique opening
         self.spotList(filterList(data, optionData.spots));
         reSetMarkers(self.spotList(), map, markers);
     });
+
+//     <input type="text"
+//        data-bind="textInput : keyword,
+//                   event: {keypress: onEnter}" >
+// </input>
+
+    // that.onEnter = function(d,e){
+    //     e.keyCode === 13 && that.search();
+    //     return true;
+    // };
+
+    self.onEnter = function(data,event) {
+        // if (typeof infoWindow != 'undefined')
+        //infoWindow.close(); // unique opening
+        if (event.keyCode === 13) {
+            console.log("Got an <enter> !!!");
+            if (self.spotList().length === 1) {
+                for (var i in markers) {
+                    var marker = markers[i];
+                    if (marker.title == self.spotList()[0].name)
+                        google.maps.event.trigger(marker, 'click');
+                }
+            }
+        }
+        return true;
+    }
 };
 
 ko.applyBindings(new ViewModel());
@@ -448,5 +478,7 @@ function filterList(userText, modelArray) {
      });
      return result;
 }
+
+
 
 

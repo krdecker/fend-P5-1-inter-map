@@ -27,7 +27,10 @@
     </ul>
 
     <div id="selector" data-bind="attr: {style: mapDisplay}">
-        <input id="filter-slot" data-bind="hasFocus: isSelected, textInput: filterSlot" />
+        <input id="filter-slot" data-bind="hasFocus: isSelected, textInput: filterSlot, event: {keypress: onEnter}"/>
+
+        <!-- event: {keyup: filterSlot}"/> -->
+        <!-- , event: {keypress: onEnter}" /> -->
         <button id="filter-button" data-bind="click: setFilterSelected">FILTER</button>
         <span id="aster" data-bind="visible: isSelected"> * </span>
     </div>
