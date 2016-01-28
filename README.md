@@ -8,6 +8,7 @@ It grows out of course-work from the JavaScript Design Patterns course
 & Introduction to Ajax course.
 
 *Assignment from Udacity:*
+
 1 Review our course JavaScript Design Patterns.
 
 2 Download the Knockout framework. Knockout must be used to handle list, filter, and any other information on the page that is subject to changing state. Things that should not be handled by knockout: anything the map api is used for, tracking markers, making the map, refreshing the map.

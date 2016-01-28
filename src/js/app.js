@@ -9,38 +9,7 @@
 // json objects returned from apis
 // lists of sites on each map-view
 
-// trains data:
-var TrainsModel = {
-    zoomLevel: 19,
-    center: {lat: 49.262219, lng: -123.069252},
-    spots: [
-        {
-            name: "Skytrain Platform 3 & 4",
-            location: {lat: 49.261905, lng: -123.069172}
-        },
-        {
-            name: "Skytrain Platform 2",
-            location: {lat: 49.262980, lng: -123.068477}
-        }
-    ]
-};
 
-// buses data:
-var BusesModel = {
-    zoomLevel: 19,
-    center: {lat: 49.262252, lng: -123.069801},
-    spots: [
-        {
-            name: "WB E Broadway NS Commercial Bay 1",
-            location: {lat: 49.262437, lng: -123.069420}
-        },
-        {
-            name: "EB E Broadway FS Commercial Dr",
-            location: {lat: 49.262216, lng: -123.068957}
-        }
-
-    ]
-};
 
 // eats data: an array of places
 var EatsModel = {
@@ -78,98 +47,11 @@ var EatsModel = {
     ]
 };
 
-// shops data:
-var ShopsModel = {
-    zoomLevel: 17,
-    spots: [
-        {
-            name: "Shoppers Drug Mart",
-            location: {lat: 49.262576, lng: -123.068751}
-        },
-        {
-            name: "Bank of Montreal",
-            location: {lat: 49.262156, lng: -123.070113},
-        },
-        {
-            name: "Safeway Groceries",
-            location: {lat: 49.261791, lng: -123.068534}
-        },
-        {
-            name: "Orchid Beauty Centre",
-            location: {lat: 49.262184, lng: -123.070828}
-        },
-        {
-            name: "Labour Ready Casual Work",
-            location: {lat: 49.262161, lng: -123.070380}
-        },
-        {
-            name: "CI Bank of Commerce",
-            location: {lat: 49.262074, lng: -123.069409}
-        },
-        {
-            name: "Bank Of Nova Scotia",
-            location: {lat: 49.262550, lng: -123.070002}
-        },
-        {
-            name: "Donald's Market",
-            location: {lat: 49.264190, lng: -123.069981}
-        }
-
-    ]
-};
-
-// todo data:
-var TodoModel = {
-    zoomLevel: 16,
-    spots: [
-        {
-            name: "Rio Cinema On Broadway",
-            location: {lat: 49.262039, lng: -123.070509}
-        },
-        {
-            name: "Tung Lin Kok Yuen Society Buddhist Temple",
-            location: {lat: 49.262642, lng: -123.066175}
-        },
-        {
-            name: "Daralmadinah Society Mosque",
-            location: {lat: 49.261643, lng: -123.070592}
-        },
-        {
-            name: "Community Garden Walk",
-            location: {lat: 49.259850, lng: -123.069303}
-        },
-        {
-            name: "Trout Lake",
-            location: {lat: 49.257151, lng: -123.064527}
-        },
-        {
-            name: "St.Augustine's Local Beer Pub",
-            location: {lat: 49.263781, lng: -123.069252}
-        },
-        {
-            name: "Toby's Tavern",
-            location: {lat: 49.260229, lng: -123.070182}
-        },
-        {
-            name: "Suicide Attempt Counselling Service",
-            location: {lat: 49.262358, lng: -123.070521}
-        }
-    ]
-};
-
-//// mini-Router
-var optionModels = [
-        { name: "Trains", model: TrainsModel },
-        { name: "Buses", model: BusesModel },
-        { name: "Eats", model: EatsModel },
-        { name: "Shops", model: ShopsModel },
-        { name: "To Do", model: TodoModel }
-];
-
+var model = EatsModel;
 
 ///////////////MAP API VIEWMODEL///////////////////////////
 
-var map;
+var map, markers, infoWindow;
 
 //get rid of all Google's POI and Transit features on our map
 var cleanSweep = [
@@ -203,17 +85,36 @@ var mapOptions = {
     }
 
 
-var markers = [],
-    infoWindow;
+
+
+// INFO WINDOW DEF
+// this will eventually contain info return by Ajax calls to APIs
+
+    // load streetview
+// var streetviewUrl = '';
+// var picture = '';
+
+//var css = '"height:100%;width:100%;font-size:4em;color:blue;background-color:orange;padding:5px"';
+// var css = '';
+// var infoContent = '';
+
+
 
 function initMap() {
-    // console.log("In initMap");
     // Create a map object and specify the DOM element for display.
     map = new google.maps.Map(document.getElementById('map-div'), mapOptions );
+    markers = [];
+    infoWindow = new google.maps.InfoWindow({});
+
+    map.setZoom(model.zoomLevel);
+    map.setCenter(model.center);
+
+    setMarkers(model.spots, map);
 }
 
+
+
 function resetMap(model) {
-    //console.log("In resetMap: " + model.zoomLevel);
 
     // Create a map object and specify the DOM element for display.
     map = new google.maps.Map(document.getElementById('map-div'), mapOptions );
@@ -233,8 +134,15 @@ function setMarkers(spots, map) {
     }
 }
 
+function stealClick_ (e) {
+  e.stopPropagation();
+}
+
+// google.maps.event.addDomListener(closeImg, 'click', removeInfoBox(this));
+// google.maps.event.addDomListener(contentDiv, 'mousedown', stealClick_);
+
 function getMarker (location, name, map) {
-    var markColor = "9fcf2f";
+    var markColor = "4f6fcf";
 
     var marker = new google.maps.Marker({
         position: location,
@@ -258,33 +166,74 @@ function getMarker (location, name, map) {
 
 
     // add Bounce & an Info Window on click event
+    // streetviewUrl = 'http://maps.googleapis.com/maps/api/streetview?size=600x400&location=' + marker.position.toString() + '';
+    // picture = '<img class="bgimg" src="' + streetviewUrl + '">';
+    // console.log(marker.position.toString());
+    //var css = '"height:100%;width:100%;font-size:4em;color:blue;background-color:orange;padding:5px"';
+    // css = '"height:100%;width:100%"';
+    // infoContent = '<div style=' + css + '><strong>' + picture + '</strong></div>';
 
-// INFO WINDOW DEF
-// this will eventually contain info return by Ajax calls to APIs
+    // google.maps.event.addListener(marker, 'click', function() {
+    //               marker.setAnimation(google.maps.Animation.BOUNCE);
+    //         if (typeof infoWindow != 'undefined') infoWindow.close(); // unique opening
 
-    var css = '"height:100%;width:100%;font-size:4em;color:blue;background-color:orange;padding:5px"';
-    var infoContent =
-    '<div style=' + css
-    + '><strong>'
-    + name + '</strong></div>' ;
-        // TODO  this to <img src=''> etc. for Ajax content
+    //         var infoContent = "";
+    //         infoWindow = new google.maps.InfoWindow({
+    //             content: infoContent
+    //         });
+    //         infoWindow.content = function() {
 
-     google.maps.event.addListener(marker, 'click', function() {
-                  marker.setAnimation(google.maps.Animation.BOUNCE);
-            if (typeof infoWindow != 'undefined') infoWindow.close(); // unique opening
-            infoWindow = new google.maps.InfoWindow({
-                content: infoContent
-            });
-            setTimeout( function() {
-                infoWindow.open(map, marker);
-                if (marker.getAnimation() !== null) marker.setAnimation(null);
-            }, 1200);
-    });
+    //             var streetviewUrl = 'http://maps.googleapis.com/maps/api/streetview?size=600x400&location=' + marker.position.toString() + '';
+    //             var picture = '<img class="bgimg" src="' + streetviewUrl + '">';
+    //             console.log("In getInfo: " + marker.position.toString());
+    // //var css = '"height:100%;width:100%;font-size:4em;color:blue;background-color:orange;padding:5px"';
+    //             var css = '"height:100%;width:100%"';
+    //             var content = '<div style=' + css + '>' + picture + '</div>';
+
+    //             return content;
+    //         });
+
+    //         setTimeout( function() {
+    //             infoWindow.open(map, marker);
+    //             if (marker.getAnimation() !== null) marker.setAnimation(null);
+    //         }, 1200);
+    // });
+
+    // var infoContent = "<p>" + marker.title + "</p><p>" + marker.position.toString() + "</p>";
+    // var css = '"height:200px;width:400px;font-size:36pt;color:red;opacity:.6"';
+    // var infoContentBox = '<div id="info" style=' + css + '>' + infoContent + '</div>;'
+
+    // var localInfoWindow = new google.maps.InfoWindow({
+    //     content: infoContentBox,
+    //     maxWidth: 2000
+    // })
+
+    // google.maps.event.addListener(marker, 'click', function() {
+
+    //         console.log("after click: on marker " + marker.title );
+    //         openAPIslide(marker.title);
+
+            // if ( this.getAnimation() ) {
+
+            //     this.setAnimation( null );
+            // }
+            // else {
+
+            //     this.setAnimation( google.maps.Animation.BOUNCE );
+
+            // }
+            //marker.setAnimation(google.maps.Animation.BOUNCE);
+            //setTimeout( function() { if (marker.getAnimation() !== null) marker.setAnimation(null);}, 1200);
+    // });
 
     return marker;
 }
 
 
+//interface to API AJAX system
+function openAPIslide(spotName) {
+    console.log("In openAPIslide with: " + spotName);
+}
 
 // interface to filtration system
 function reSetMarkers(spots, map, markers) {
@@ -341,69 +290,48 @@ function reSetMarkers(spots, map, markers) {
 //   }
 // }
 
+//example from John's question period: "/www.youtube.com/watch?v=2rcudLdlzR4#t=1188"
+
+// var wiki = "www.wiki.com/?params..."
+
+// var wikiData = ko.observable(" ");
+
+// $.ajax({
+//     url: wiki
+// }).success(function(response){
+//         callback(response);
+// });
+
+// function callback(data){
+//     var filteredData = data.filter(function(){
+//             //do something to parse the response from api
+//     });
+
+//     wikiData(filteredData); // resets the bound view, etc.
+// }
 
 
 /////////////////KO VIEWMODEL///////////////////
 
-var optionData; // global to pass pointer to data object
+
 
 
 var ViewModel = function () {
     var self = this;
 
     // Data
+    self.spotList = ko.observableArray(model.spots);
 
-    // can data bind on 'constants'; don't need the overhead of an .observable
-    self.station = "Broadway-Commercial"; //ko.observable("Broadway-Commercial");
-    self.optList = ["Trains","Buses","Eats","Shops","To Do"]; //ko.observableArray(["Trains","Buses","Eats","Shops","To Do"]);
-
-    self.spotList = ko.observableArray([]);
-
-    self.mapDisplay = ko.observable("display:none");
-    self.menuDisplay = ko.observable("display:block");
     self.filterSlot = ko.observable();
 
 
     // Behaviours
 
-    self.changeOpt = function (clickedOpt) {
-
-        for (var i in optionModels){
-            if (optionModels[i].name == clickedOpt) {
-                optionData = optionModels[i].model;
-            }
-        };
-
-        // hide menu and show map in selected category
-        self.menuDisplay("display:none");
-        self.mapDisplay("display:block");
-
-        resetMap(optionData);
-        self.buildSpotlist(optionData);
-
-    };
-
-    // bound to appropriate DOM elements
-    self.menuReturn = function () {
-        self.mapDisplay("display:none");
-        self.menuDisplay("display:block");
-
-        // reset filterSlot
-        self.filterSlot("");
-        self.isSelected(false);
-
-    };
-
-    self.buildSpotlist = function(model){
-        self.spotList(model.spots);
-    };
-
-
     // TODO: user makes a selection to display Info Window from marker
 
     // selection can occur directly, ie, spotPick  ***DONE
 
-    // or indirectly,  by text filtering the list down to one spot and pressing Enter
+    // or indirectly,  by text filtering the list down to one spot and pressing Enter ***DONE
 
     // or at any time by clicking the marker ***DONE
 
@@ -435,7 +363,7 @@ var ViewModel = function () {
         console.log(data);
         if (typeof infoWindow != 'undefined')
             infoWindow.close(); // unique opening
-        self.spotList(filterList(data, optionData.spots));
+        self.spotList(filterList(data, model.spots));
         reSetMarkers(self.spotList(), map, markers);
     });
 

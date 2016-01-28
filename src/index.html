@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Station Tout</title>
+    <title>Station</title>
 <!--
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
@@ -12,30 +12,23 @@
 </head>
 
 <body>
-    <div id="top">
-        <h1 class="station-title" data-bind="text: station, attr: {style: menuDisplay}"></h1>
-        <span><img id="burger" src="img/burger.png" data-bind="click: menuReturn"></span>
-        <h1 class="station-title" data-bind="attr: {style: menuDisplay}">Station</h1>
+    <div id="listing" class="over-lay">
+        <ul id="spot-list" data-bind="foreach: spotList">
+            <li class="spot" data-bind="text: name,
+                                        click: $parent.spotPick"></li>
+        </ul>
     </div>
+    <div id="selector" class="over-lay" data-bind="">
+        <input id="filter-slot" placeholder=" type here..."
+             data-bind="hasFocus: isSelected,
+                        textInput: filterSlot,
+                        event: {keypress: onEnter}"/>
 
-    <ul id="opt-list" data-bind="foreach: optList, attr: {style: menuDisplay}">
-        <li class="option" data-bind="text: $data, click: $parent.changeOpt"></li>
-    </ul>
-
-    <ul id="spot-list" data-bind="foreach: spotList, attr: {style: mapDisplay}">
-        <li class="spot" data-bind="text: name, click: $parent.spotPick"></li>
-    </ul>
-
-    <div id="selector" data-bind="attr: {style: mapDisplay}">
-        <input id="filter-slot" data-bind="hasFocus: isSelected, textInput: filterSlot, event: {keypress: onEnter}"/>
-
-        <!-- event: {keyup: filterSlot}"/> -->
-        <!-- , event: {keypress: onEnter}" /> -->
         <button id="filter-button" data-bind="click: setFilterSelected">FILTER</button>
         <span id="aster" data-bind="visible: isSelected"> * </span>
     </div>
 
-    <div id="map-box" data-bind="attr: {style: mapDisplay}">
+    <div id="map-box" class="under-lay" data-bind="">
         <div id="map-div"></div>
     </div>
 

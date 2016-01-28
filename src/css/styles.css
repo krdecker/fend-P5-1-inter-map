@@ -2,16 +2,14 @@
 /*<style type="text/css">
 */
 
-* {
+/** {
     border-style: solid;
     border-color: red;
-    /*#287EC7;*/
-}
+}*/
 
 html, body {
     height: 100%;
-    margin: 0;
-    padding: 0;
+    display: block;
 }
 #map-div {
     height: 100%;
@@ -22,37 +20,17 @@ html, body {
 body {
     background-color: #828282;
 }
-
-.station-title {
-    display: inline-block;
-    color: #406090;
-    font-size: 5em;
-    margin: 1% 5%;
-    width: 66%;
+.over-lay {
+    position: absolute;
+    z-index: 99;
 }
-#burger {
-   /* height: 8%;*/
-    width: 6%;
-    float: right;
-    margin: 3%;
+.under-lay {
+    z-index: 1;
 }
 
-#opt-list {
-}
-
-li.option {
-    color: #4c401c;
-    font-size: 3.5em;
-    padding: 5%;
-    padding-left: 15%;
-    margin: 5% 10%;
-    background-color: #a09080;
-    /* #871212;*/
-    border-radius: 5%;
-}
 #map-box {
     width:100%;
-    height: 80%;
+    height: 100%;
 }
 #map-div {
     width: 100%;
@@ -63,22 +41,21 @@ li.option {
     outline-color: #e0a030;
 }
 
-#burger {
-
-}
-
 #spot-list {
     margin-left: 3px;
 }
+
 li.spot {
     height: 80px;
     font-size: 2.5em;
-    color: orange;
+    color: #8f3f1f;
 }
 #selector {
     height: 8%;
     padding-left: 5%;
     display: block;
+    position: absolute;
+    bottom: 0;
 }
 #filter-slot {
     width: 60%;
