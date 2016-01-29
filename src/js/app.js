@@ -17,12 +17,12 @@ var EatsModel = {
     center: {lat: 49.262252, lng: -123.069801},
     spots: [
         {
-            name: "A&W Restaurant",
-            location: {lat: 49.262535, lng: -123.069399}
-        },
-        {
             name: "Uncle Fatih's Pizza",
             location: {lat: 49.262517, lng: -123.070177}
+        },
+        {
+            name: "A&W Restaurant",
+            location: {lat: 49.262535, lng: -123.069399}
         },
         {
             name: "Booster Juice",
@@ -51,7 +51,7 @@ var model = EatsModel;
 
 ///////////////MAP API VIEWMODEL///////////////////////////
 
-var map, markers, infoWindow;
+var map, markers, openInfoWindow;
 
 //get rid of all Google's POI and Transit features on our map
 var cleanSweep = [
@@ -66,10 +66,40 @@ var cleanSweep = [
             featureType: "transit",
             elementType: "labels",
             stylers: [
-                  { visibility: "off" }
+                  { visibility: "off"}
             ]
         }
       ];
+
+var RedRoadsNGreenBusStops = [
+  {
+    "featureType": "poi",
+    "elementType": "labels",
+    "stylers": [
+        { visibility: "off" }
+    ]
+  },
+  {
+    "featureType": "road",
+    "stylers": [
+      { "gamma": 0.65 },
+      { "hue": "#ff9c30" },
+      { "visibility": "on" },
+      { "saturation": 99 },
+      { "lightness": -12 }
+    ]
+  },{
+    "featureType": "transit",
+    "stylers": [
+      { "hue": "#00ff33" },
+      { "gamma": 0.60 },
+      { "saturation": 5 },
+      { "visibility": "on" },
+      { "weight": 4.6 },
+      { "lightness": -12 } //was -22
+    ]
+  }
+];
 
 var mapOptions = {
         center: {lat: 49.263, lng: -123.0695},
@@ -77,11 +107,14 @@ var mapOptions = {
         scrollwheel: false,
         zoom: 19, // tighter for transit
         //zoom: 18 // for eats etc
+        maxZoom: 19,
+        minZoom: 19,
         zoomControl: false,
         scrollwheel: false,
         draggable: false,
+        disableDoubleClickZoom: true,
         disableDefaultUI: true,
-        styles: cleanSweep
+        styles: RedRoadsNGreenBusStops
     }
 
 
@@ -98,7 +131,11 @@ var mapOptions = {
 // var css = '';
 // var infoContent = '';
 
-
+function NoMap() {
+    alert("Google Map is unavailable just now.\n"
+        + "But info on Eats around the station \n"
+        + " is still listed. Click on the list.");
+}
 
 function initMap() {
     // Create a map object and specify the DOM element for display.
@@ -134,12 +171,15 @@ function setMarkers(spots, map) {
     }
 }
 
+
 function stealClick_ (e) {
   e.stopPropagation();
 }
 
 // google.maps.event.addDomListener(closeImg, 'click', removeInfoBox(this));
 // google.maps.event.addDomListener(contentDiv, 'mousedown', stealClick_);
+
+
 
 function getMarker (location, name, map) {
     var markColor = "4f6fcf";
@@ -165,7 +205,7 @@ function getMarker (location, name, map) {
 
 
 
-    // add Bounce & an Info Window on click event
+
     // streetviewUrl = 'http://maps.googleapis.com/maps/api/streetview?size=600x400&location=' + marker.position.toString() + '';
     // picture = '<img class="bgimg" src="' + streetviewUrl + '">';
     // console.log(marker.position.toString());
@@ -173,6 +213,8 @@ function getMarker (location, name, map) {
     // css = '"height:100%;width:100%"';
     // infoContent = '<div style=' + css + '><strong>' + picture + '</strong></div>';
 
+
+// add Bounce & an Info Window on click event
     // google.maps.event.addListener(marker, 'click', function() {
     //               marker.setAnimation(google.maps.Animation.BOUNCE);
     //         if (typeof infoWindow != 'undefined') infoWindow.close(); // unique opening
@@ -211,24 +253,81 @@ function getMarker (location, name, map) {
     // google.maps.event.addListener(marker, 'click', function() {
 
     //         console.log("after click: on marker " + marker.title );
-    //         openAPIslide(marker.title);
 
-            // if ( this.getAnimation() ) {
-
-            //     this.setAnimation( null );
-            // }
-            // else {
-
-            //     this.setAnimation( google.maps.Animation.BOUNCE );
-
-            // }
-            //marker.setAnimation(google.maps.Animation.BOUNCE);
-            //setTimeout( function() { if (marker.getAnimation() !== null) marker.setAnimation(null);}, 1200);
-    // });
-
+    //         var bounceError = marker.setAnimation(google.maps.Animation.BOUNCE);
+    //         if (! bounceError) {
+    //             setTimeout( function() {
+    //                 marker.setAnimation(null);
+    //                 openAPIslide(marker.title);
+    //             }, 1200);
+    //         }
+    //  });
+    //attachWindow(marker); // tried separate listeners
+    attachBouncer(marker);
     return marker;
 }
 
+
+// function attachBouncer(marker) {
+//     google.maps.event.addListener(marker, "click", function() {
+//         marker.setAnimation(google.maps.Animation.BOUNCE);
+//         console.log("in bouncer, after click: on marker " + marker.title );
+        // setTimeout( function() {
+        //             marker.setAnimation(null);
+        //         }, 1200);
+//     });
+// }
+
+function attachBouncer(marker) {
+    var overEvent = google.maps.event.addListener(marker, "click", doBounce);
+
+    function doBounce() {
+        google.maps.event.removeListener(overEvent);
+        marker.setAnimation(google.maps.Animation.BOUNCE);
+        console.log("in doBounce: have set the BOUNCE");
+        window.setTimeout( function() {
+            overEvent = google.maps.event.addListener(marker, "click", doBounce);
+            marker.setAnimation(null);
+            console.log("in doBounce: have set the NULL");
+        }, 2000);
+        console.log("in doBounce: about to call to open window");
+        openWindow(marker);
+    }
+}
+// var infoContent = "<p>" + marker.title + "</p><p>" + marker.position.toString() + "</p>";
+// var css = '"height:200px;width:400px;font-size:36pt;color:red;opacity:.6"';
+// var infoContentBox = '<div id="info" style=' + css + '>' + infoContent + '</div>;'
+
+// function attachWindow(marker) {
+//   var infowindow = new google.maps.InfoWindow({
+//     content: '<div id="info" style='
+//                 + '"height:90px;width:400px;font-size:36pt;color:red;opacity:.6">'
+//                 + '<p>' + marker.title + '</p>'
+//                 + '</div>'//,
+//     //zIndex: 101
+//   });
+
+//   marker.addListener('click', function() {
+//     //if (openInfoWindow) openInfoWindow.close();
+//     infowindow.open(marker.get('map'), marker);
+//     console.log("just opened window");
+//     //openAPIslide(marker.title);
+//   });
+// }
+
+function openWindow(marker) {
+    var infowindow = new google.maps.InfoWindow({
+    content: '<div id="info" style='
+                + '"height:90px;width:400px;font-size:36pt;color:red;opacity:.6">'
+                + '<p>' + marker.title + '</p>'
+                + '</div>',
+    zIndex: 101
+    });
+
+    //if (openInfoWindow) openInfoWindow.close();
+    infowindow.open(marker.get('map'), marker);
+    console.log("In openWindow: just opened window");
+}
 
 //interface to API AJAX system
 function openAPIslide(spotName) {
