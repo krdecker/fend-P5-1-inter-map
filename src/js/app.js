@@ -18,7 +18,7 @@ var EatsModel = {
     spots: [
         {
             name: "Uncle Fatih's Pizza",
-            location: {lat: 49.262517, lng: -123.070177}
+            location: {lat: 49.262487, lng: -123.070000} //was .262517 .070177
         },
         {
             name: "A&W Restaurant",
@@ -51,7 +51,15 @@ var model = EatsModel;
 
 ///////////////MAP API VIEWMODEL///////////////////////////
 
-var map, markers, openInfoWindow;
+var map, markers;
+var infowindow;
+// = new google.maps.InfoWindow({
+    // content: '<div id="info" style='
+    //             + '"height:90px;width:400px;font-size:36pt;color:red;opacity:.6">'
+    //             + '<p>' + marker.title + '</p>'
+    //             + '</div>'
+ //       content: ""
+ //   });
 
 //get rid of all Google's POI and Transit features on our map
 var cleanSweep = [
@@ -107,8 +115,8 @@ var mapOptions = {
         scrollwheel: false,
         zoom: 19, // tighter for transit
         //zoom: 18 // for eats etc
-        maxZoom: 19,
-        minZoom: 19,
+        //maxZoom: 19,
+        //minZoom: 19,
         zoomControl: false,
         scrollwheel: false,
         draggable: false,
@@ -141,7 +149,7 @@ function initMap() {
     // Create a map object and specify the DOM element for display.
     map = new google.maps.Map(document.getElementById('map-div'), mapOptions );
     markers = [];
-    infoWindow = new google.maps.InfoWindow({});
+    infowindow = new google.maps.InfoWindow({});
 
     map.setZoom(model.zoomLevel);
     map.setCenter(model.center);
@@ -166,9 +174,14 @@ function setMarkers(spots, map) {
     for (var i in spots) {
         var spot = spots[i];
 
-        marker = getMarker(spot.location, spot.name, map);
+        if (i==0) offset = {x:100, y:-108};
+        else offset = {x:0, y:-108};
+
+        marker = getMarker(offset, spot.location, spot.name, map);
         markers.push(marker);
     }
+    // fine tune:
+    //markers[0].anchorPoint.set(x, -20);
 }
 
 
@@ -181,10 +194,11 @@ function stealClick_ (e) {
 
 
 
-function getMarker (location, name, map) {
+function getMarker (offset, location, name, map) {
     var markColor = "4f6fcf";
 
     var marker = new google.maps.Marker({
+        anchorPoint: offset,
         position: location,
         title: name,
         map: map,
@@ -279,21 +293,24 @@ function getMarker (location, name, map) {
 // }
 
 function attachBouncer(marker) {
-    var overEvent = google.maps.event.addListener(marker, "click", doBounce);
+    var clickEvent = google.maps.event.addListener(marker, "click", doBounce);
 
     function doBounce() {
-        google.maps.event.removeListener(overEvent);
+        google.maps.event.removeListener(clickEvent);
         marker.setAnimation(google.maps.Animation.BOUNCE);
         console.log("in doBounce: have set the BOUNCE");
         window.setTimeout( function() {
-            overEvent = google.maps.event.addListener(marker, "click", doBounce);
+            clickEvent = google.maps.event.addListener(marker, "click", doBounce);
             marker.setAnimation(null);
             console.log("in doBounce: have set the NULL");
-        }, 2000);
+            //vm.openAPIslide(marker.title);
+        }, 6000);
         console.log("in doBounce: about to call to open window");
         openWindow(marker);
     }
 }
+
+
 // var infoContent = "<p>" + marker.title + "</p><p>" + marker.position.toString() + "</p>";
 // var css = '"height:200px;width:400px;font-size:36pt;color:red;opacity:.6"';
 // var infoContentBox = '<div id="info" style=' + css + '>' + infoContent + '</div>;'
@@ -316,23 +333,42 @@ function attachBouncer(marker) {
 // }
 
 function openWindow(marker) {
-    var infowindow = new google.maps.InfoWindow({
-    content: '<div id="info" style='
-                + '"height:90px;width:400px;font-size:36pt;color:red;opacity:.6">'
-                + '<p>' + marker.title + '</p>'
-                + '</div>',
-    zIndex: 101
-    });
+    var content;
 
-    //if (openInfoWindow) openInfoWindow.close();
+    if (infowindow) infowindow.close();
+    content = buildContent(marker);
+
+    if (content) infowindow.setContent(content);
+
     infowindow.open(marker.get('map'), marker);
     console.log("In openWindow: just opened window");
 }
 
-//interface to API AJAX system
-function openAPIslide(spotName) {
-    console.log("In openAPIslide with: " + spotName);
+
+// reluctantly including an onclick DOM global event attribute in the
+//  <img> element of the infowindow
+// after giving up on adding a listener to the infowindow
+// due to time constraints
+// TODO: try to do a ko binding on the infowindow DOM node
+
+function buildContent(marker) {
+
+    var streetviewUrl = 'http://maps.googleapis.com/maps/api/streetview?size=400x300&location=' + marker.position.toString() + '';
+    var picture = '<img class="bgimg" src="' + streetviewUrl + '">';
+    console.log("In buildContent: " + marker.position.toString());
+    //var css = '"height:100%;width:100%;font-size:4em;color:blue;background-color:orange;padding:5px"';
+    var css = '"height:100%;width:100%"';
+    var content = '<div onclick="itchwindow()" style=' + css + '>' + picture + '</div>';
+
+    return content;
 }
+
+function itchwindow() {
+    console.log("Ouch!!!");
+    console.log(infowindow.anchor.title);
+    vm.openAPIslide(infowindow.anchor.title);
+}
+
 
 // interface to filtration system
 function reSetMarkers(spots, map, markers) {
@@ -409,7 +445,9 @@ function reSetMarkers(spots, map, markers) {
 //     wikiData(filteredData); // resets the bound view, etc.
 // }
 
-
+function buildSlideContent(spotName) {
+    return "Ratings for:  " + spotName;
+}
 /////////////////KO VIEWMODEL///////////////////
 
 
@@ -419,20 +457,14 @@ var ViewModel = function () {
     var self = this;
 
     // Data
+    self.slideOn = ko.observable(false);
+    self.slideContent = ko.observable("");
     self.spotList = ko.observableArray(model.spots);
 
     self.filterSlot = ko.observable();
 
 
     // Behaviours
-
-    // TODO: user makes a selection to display Info Window from marker
-
-    // selection can occur directly, ie, spotPick  ***DONE
-
-    // or indirectly,  by text filtering the list down to one spot and pressing Enter ***DONE
-
-    // or at any time by clicking the marker ***DONE
 
     self.spotPick = function () {
         console.log(this.name);
@@ -443,42 +475,22 @@ var ViewModel = function () {
         }
     };
 
-    self.Selection = function () {
-       console.log("Selector says:" + change);
-    };
-
     self.isSelected = ko.observable(false);
 
     self.setFilterSelected = function() {
         this.isSelected(true);
+        self.slideOff();
     };
-
-    // self.filterSlot = function(data, event) {
-    //     console.log(data);
-    //     console.log(event.keyCode);
-    // }
 
     self.filterSlot.subscribe(function(data) {
         console.log(data);
-        if (typeof infoWindow != 'undefined')
-            infoWindow.close(); // unique opening
+        if (infowindow) infowindow.close();
         self.spotList(filterList(data, model.spots));
         reSetMarkers(self.spotList(), map, markers);
     });
 
-//     <input type="text"
-//        data-bind="textInput : keyword,
-//                   event: {keypress: onEnter}" >
-// </input>
-
-    // that.onEnter = function(d,e){
-    //     e.keyCode === 13 && that.search();
-    //     return true;
-    // };
-
-    self.onEnter = function(data,event) {
-        // if (typeof infoWindow != 'undefined')
-        //infoWindow.close(); // unique opening
+    self.onEnter = function (data,event) {
+        if (infowindow) infowindow.close();
         if (event.keyCode === 13) {
             console.log("Got an <enter> !!!");
             if (self.spotList().length === 1) {
@@ -491,10 +503,29 @@ var ViewModel = function () {
         }
         return true;
     }
+
+//interface to API AJAX system
+
+    self.openAPIslide = function (spotName) {
+        console.log("In openAPIslide with: " + spotName);
+
+        self.slideContent( buildSlideContent(spotName) );
+
+        self.slideOn(true);
+    }
+
+    self.slideOff = function () {
+
+        this.slideOn(false);
+    }
+
 };
 
-ko.applyBindings(new ViewModel());
+var vm = new ViewModel();
+ko.applyBindings(vm);
 
+//-----------------------------------------------
+// helper func: regular expression
 function filterList(userText, modelArray) {
      var result=[],
          re = new RegExp(userText, ['i']);

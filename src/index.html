@@ -12,6 +12,7 @@
 </head>
 
 <body>
+    <div id="api-slide" data-bind="text: slideContent, visible: slideOn, click: slideOff"></div>
     <div id="listing" class="over-lay">
         <ul id="spot-list" data-bind="foreach: spotList">
             <li class="spot" data-bind="text: name,
@@ -20,7 +21,8 @@
     </div>
     <div id="selector" class="over-lay" data-bind="">
         <input id="filter-slot" placeholder=" type here..."
-             data-bind="hasFocus: isSelected,
+             data-bind="click: setFilterSelected,
+                        hasFocus: isSelected,
                         textInput: filterSlot,
                         event: {keypress: onEnter}"/>
 

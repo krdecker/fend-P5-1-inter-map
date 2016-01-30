@@ -40,3 +40,5 @@ It grows out of course-work from the JavaScript Design Patterns course
 - series of small tools & unit testing apis 14 Jan 2016
 - completed functioning of filter by text and by item click 21 Jan 2016
 - filter markers 23 Jan 2016
+- animate markers and open InfoWindows with streetview pix -28 Jan 2016
+
