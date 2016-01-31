@@ -20,9 +20,14 @@ var EatsModel = {
             name: "Uncle Fatih's Pizza",
             location: {lat: 49.262487, lng: -123.070000} //was .262517 .070177
         },
+        // foursquare search choked on this; went to YVR instead
+        // {
+        //     name: "A&W Restaurant",
+        //     location: {lat: 49.262535, lng: -123.069399}
+        // },
         {
-            name: "A&W Restaurant",
-            location: {lat: 49.262535, lng: -123.069399}
+            name: "Buddha's Orient Express",
+            location: {lat: 49.262719, lng: -123.069289}
         },
         {
             name: "Booster Juice",
@@ -425,29 +430,7 @@ function reSetMarkers(spots, map, markers) {
 //   }
 // }
 
-//example from John's question period: "/www.youtube.com/watch?v=2rcudLdlzR4#t=1188"
 
-// var wiki = "www.wiki.com/?params..."
-
-// var wikiData = ko.observable(" ");
-
-// $.ajax({
-//     url: wiki
-// }).success(function(response){
-//         callback(response);
-// });
-
-// function callback(data){
-//     var filteredData = data.filter(function(){
-//             //do something to parse the response from api
-//     });
-
-//     wikiData(filteredData); // resets the bound view, etc.
-// }
-
-function buildSlideContent(spotName) {
-    return "Ratings for:  " + spotName;
-}
 /////////////////KO VIEWMODEL///////////////////
 
 
@@ -509,7 +492,13 @@ var ViewModel = function () {
     self.openAPIslide = function (spotName) {
         console.log("In openAPIslide with: " + spotName);
 
-        self.slideContent( buildSlideContent(spotName) );
+        //var slideString =
+        var ajax_error = buildSlideContent(spotName);
+        //console.log(slideString);
+
+        //self.slideContent(slideString);
+
+        if (ajax_error) self.slideContent(ajax_error);
 
         self.slideOn(true);
     }
@@ -524,6 +513,7 @@ var ViewModel = function () {
 var vm = new ViewModel();
 ko.applyBindings(vm);
 
+
 //-----------------------------------------------
 // helper func: regular expression
 function filterList(userText, modelArray) {
@@ -537,6 +527,142 @@ function filterList(userText, modelArray) {
      return result;
 }
 
+function getLocationAsLLString(spotName, model) {
+    var result = "ll=";
+
+    for (i in model.spots) {
+        var spot = model.spots[i];
+        if (spot.name == spotName) {
+            result += spot.location.lat.toString() + ',' + spot.location.lng.toString();
+        }
+    }
+
+    return result;
+}
+
+//==========================================================
+// 3rd party API stuff
+
+//example from John's question period: "/www.youtube.com/watch?v=2rcudLdlzR4#t=1188"
+
+// var wiki = "www.wiki.com/?params..."
+
+// var wikiData = ko.observable(" ");
+
+// $.ajax({
+//     url: wiki
+// }).success(function(response){
+//         callback(response);
+// });
+
+// function callback(data){
+//     var filteredData = data.filter(function(){
+//             //do something to parse the response from api
+//     });
+
+//     wikiData(filteredData); // resets the bound view, etc.
+// }
 
 
+
+var fourSquareURL = 'https://api.foursquare.com';
+
+
+function buildSlideContent(spotName) {
+    var formattedData = "";
+    var loc = getLocationAsLLString(spotName, EatsModel);
+    var ajax_error;
+    console.log(loc);
+
+    $.ajax({ // to get the foursquare ID number of the venue
+            url: fourSquareURL + '/v2/venues/search',
+            dataType: 'json',
+            data: 'limit=1' +
+                    '&' + loc + //'ll=45.5590561,-122.6447018' +
+                    '&query=' + spotName +
+                    '&client_id='+ kr.foursquare.Client_id +
+                    '&client_secret='+ kr.foursquare.Client_secret +
+                    '&v=20160130',
+            async: true,
+            //success: ,
+            error: sendError
+    }).success(function(response){
+          nextcall(response);
+        });
+
+
+    function nextcall(data) {
+        var venue = data.response.venues[0];
+        //https://api.foursquare.com/v2/venues/VENUE_ID
+        $.ajax({ // to get the detailed foursquare of the 'complete venue' based on ID
+            url: fourSquareURL + '/v2/venues/' + venue.id,
+            dataType: 'json',
+            data: 'limit=1' +
+                    '&' + loc + //'ll=45.5590561,-122.6447018' +
+                    '&query=' + spotName +
+                    '&client_id='+ kr.foursquare.Client_id +
+                    '&client_secret='+ kr.foursquare.Client_secret +
+                    '&v=20160130',
+            async: true,
+            //success: ,
+            error: sendError
+    }).success(function(response){
+          callback(response);
+        });
+
+    }
+
+    function callback(data){
+        console.log(data);
+        var venue = data.response.venue;
+
+        console.log(venue.name);
+            formattedData = 'FourSquare info: '
+                                + '<br>' + '<br>' + venue.name + '<br>'
+                                + venue.contact.formattedPhone + '<br>'
+            + 'address: ' + venue.location.address + '<br>'
+            + 'city: ' + venue.location.city  + '<br>'
+            + 'country: ' + venue.location.country  + '<br>'
+            + 'crossStreet: ' + venue.location.crossStreet + '<br>'
+            + 'Check-ins: ' + venue.stats.checkinsCount.toString() + '<br>'
+            + venue.likes.summary + '<br>' + '<br>'
+            + '<span style="background-color:#' + venue.ratingColor + ';color:black;padding:1%">'
+            + 'Rating: ' + venue.rating.toString() + '</span>' + '<br>'
+
+             ;
+
+        vm.slideContent(formattedData);
+    }
+
+    function sendError(object, error, exception) {
+        ajax_error = "Web call failed: " + error ;
+    }
+
+    return ajax_error;
+
+
+    //return "Ratings for:  " + spotName + "\n" + loc;
+}
+
+
+
+//from https://developer.foursquare.com/overview/auth#userless
+//https://api.foursquare.com/v2/venues/search?ll=40.7,-74&client_id=CLIENT_ID&client_secret=CLIENT_SECRET&v=YYYYMMDD
+
+//foursquare.com/v/broadway-station-sushi/4aae9cb7f964a5209b6220e3
+
+
+var kr = {
+    foursquare: {
+        Owner: "KR Decker",
+        Client_id: "ZVLKTKSGULFEQ3XMWWI3AL1A2KXYBEKD1LKSURUZDGZY41JX",
+        Client_secret: "TMT203DHWOPR3R4RSM1HE4RMOKEWLGTT0FLMZMUZ1OJHMAK1"
+    },
+    yelp: {
+        Consumer_Key:    "XrxJOUgGNKq9ZuWhBX1LDw",
+        Consumer_Secret: "zr2I76nT8l0O-trkupYE00B9BTA",
+        Token:   "-_F8aOxonR6q5SqvURwwgLIdU-qteS-B",
+        Token_Secret:    "GF7uRcPWCpzlHcRP3DiJWjvcXJE"
+    }
+}
 

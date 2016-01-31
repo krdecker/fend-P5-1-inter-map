@@ -29,6 +29,7 @@ body {
     z-index: 101;
     height: 80%;
     width: 100%;
+    padding: 2%;
 }
 
 .over-lay {
