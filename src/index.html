@@ -21,19 +21,19 @@
                                         click: $parent.spotPick"></li>
         </ul>
     </div>
-    <div id="selector" class="over-lay" data-bind="">
-        <input id="filter-slot" placeholder=" type here..."
+
+
+    <div id="map-box">
+        <div id="map-div" class="under-lay"></div>
+        <div id="selector" class="over-lay" data-bind="">
+            <input id="filter-slot" placeholder=" type here..."
              data-bind="click: setFilterSelected,
                         hasFocus: isSelected,
                         textInput: filterSlot,
                         event: {keypress: onEnter}"/>
 
-        <button id="filter-button" data-bind="click: setFilterSelected">FILTER</button>
-        <span id="aster" data-bind="visible: isSelected"> * </span>
-    </div>
-
-    <div id="map-box" class="under-lay" data-bind="">
-        <div id="map-div"></div>
+            <button id="filter-button" data-bind="click: setFilterSelected">FILTER</button>
+        </div>
     </div>
 
     <script>
